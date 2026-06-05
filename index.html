@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PsicoApoyo - Prevención del Suicidio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/logo.png" type="image/png">
+</head>
+<body>
+    <nav class="navbar fixed">
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="encuesta.html">Evaluar Estado Emocional</a></li>
+            <li><a href="recursos.html">Recursos de Apoyo</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+            <li><a href="psicologo.html" style="opacity:0.7;font-size:0.85em;">🩺 Psicólogos</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section id="home" class="hero" style="position:relative;background-image:url('assets/hero-bg.png');background-size:cover;color:white;">
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;background-color:rgba(0,30,80,0.68);z-index:1;"></div>
+        <div class="container" style="position:relative;z-index:2;">
+            <h1 style="color:white;text-shadow:2px 2px 4px rgba(0,0,0,0.7);">¿Alguien que Quieres Necesita Ayuda?</h1>
+            <p style="text-shadow:2px 2px 4px rgba(0,0,0,0.7);font-size:1.15em;max-width:750px;margin:0 auto 25px;">
+                Esta plataforma está diseñada para <strong>familias, amigos y personas cercanas</strong> que quieren apoyar a alguien en crisis emocional, así como para quienes atraviesan ese momento difícil directamente.
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+                <a href="encuesta.html" class="btn btn-primary" style="color:white;text-decoration:none;">Evaluar a un Ser Querido</a>
+                <a href="recursos.html" class="btn btn-secondary" style="color:white;text-decoration:none;">¿Cómo Puedo Ayudar?</a>
+                <a href="tel:8009112000" class="btn btn-emergency" style="color:white;text-decoration:none;">🆘 Línea de Crisis: 800-911-2000</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cifras reales — INEGI 2024 + OMS -->
+    <section style="background-color:#003366;color:white;padding:55px 20px;">
+        <div class="container">
+            <h2 style="color:white;text-align:center;margin-bottom:8px;">El Suicidio en Cifras Reales</h2>
+            <p style="text-align:center;font-size:0.9em;opacity:0.75;margin-bottom:35px;">
+                Fuentes: INEGI — Estadísticas de Defunciones Registradas 2024 (cifras preliminares) &amp; OMS 2024
+            </p>
+            <div class="pricing-grid">
+                <div class="emergency-card">
+                    <div style="font-size:2.5em;margin-bottom:8px;">8,856</div>
+                    <h3>Suicidios en México</h3>
+                    <p>registrados en 2024 — el dato más reciente del INEGI</p>
+                </div>
+                <div class="emergency-card">
+                    <div style="font-size:2.5em;margin-bottom:8px;">6.8</div>
+                    <h3>Por cada 100,000 hab.</h3>
+                    <p>tasa nacional en México 2024 — supera el 5.1 de 2014</p>
+                </div>
+                <div class="emergency-card">
+                    <div style="font-size:2.5em;margin-bottom:8px;">52%</div>
+                    <h3>Jóvenes de 15–29 años</h3>
+                    <p>el grupo más afectado en México según CONASAMA</p>
+                </div>
+                <div class="emergency-card">
+                    <div style="font-size:2.5em;margin-bottom:8px;">703,000</div>
+                    <h3>Muertes anuales</h3>
+                    <p>en el mundo cada año, según la OMS — una cada 40 seg.</p>
+                </div>
+            </div>
+            <p style="text-align:center;font-size:0.85em;opacity:0.65;margin-top:25px;">
+                Yucatán: 16.2 casos/100,000 hab. — tercera tasa más alta del país (INEGI 2024)
+            </p>
+        </div>
+    </section>
+
+    <!-- ¿Para quién es? -->
+    <section style="background-color:#fff;padding:60px 0;">
+        <div class="container">
+            <h2 style="color:#003366;text-align:center;margin-bottom:10px;">¿Para Quién es PsicoApoyo?</h2>
+            <p style="text-align:center;color:#555;font-size:1.05em;margin-bottom:40px;max-width:700px;margin-left:auto;margin-right:auto;">
+                Esta plataforma está pensada para tres tipos de usuarios. Todos son bienvenidos.
+            </p>
+            <div class="semaforo-grid">
+                <div class="semaforo-card verde">
+                    <div class="semaforo-circulo">👨‍👩‍👧</div>
+                    <h3>Familiares</h3>
+                    <p>Padres, hermanos, parejas o cualquier familiar que nota señales de alarma en un ser querido y no sabe cómo actuar o a dónde acudir.</p>
+                </div>
+                <div class="semaforo-card amarillo">
+                    <div class="semaforo-circulo">🤝</div>
+                    <h3>Amigos y Personas Cercanas</h3>
+                    <p>Amigos, compañeros o colegas que quieren apoyar a alguien que está pasando por un momento difícil y necesitan orientación.</p>
+                </div>
+                <div class="semaforo-card rojo">
+                    <div class="semaforo-circulo">💙</div>
+                    <h3>Personas en Crisis</h3>
+                    <p>Quienes atraviesan directamente una situación de riesgo emocional y buscan apoyo, orientación o contacto con un profesional.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ¿Quiénes somos? -->
+    <section class="about" style="padding:60px 0;background-color:#f9f9f9;">
+        <div class="container" style="display:flex;align-items:center;flex-wrap:wrap;gap:30px;">
+            <div style="flex:1;min-width:300px;display:flex;justify-content:center;">
+                <img src="assets/logo.jpg" alt="PsicoApoyo Logo" class="img-responsive zoom-image" style="max-width:100%;height:auto;">
+            </div>
+            <div style="flex:2;min-width:280px;text-align:justify;color:black;">
+                <h2 style="color:#003366;">¿Quiénes Somos?</h2>
+                <p>Somos <strong>PsicoApoyo</strong>, una plataforma digital desarrollada por el equipo <strong>TacoCoders</strong> del Instituto Tecnológico Superior de Calkiní (ITESCAM), en colaboración con la Psicóloga Eliza de la Torre.</p>
+                <p>Nuestro objetivo es centralizar información, recursos y apoyo profesional para la prevención del suicidio. Entendemos que muchas veces <strong>son los familiares y amigos</strong> quienes primero notan que algo no está bien, y no saben a dónde acudir ni qué decir.</p>
+                <p>Aquí encontrarás herramientas para evaluar el estado emocional de un ser querido, guías para hablar del tema con seguridad, y contacto directo con psicólogos especializados.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cómo funciona -->
+    <section style="background-color:#eaf4ff;padding:60px 0;">
+        <div class="container">
+            <h2 style="color:#003366;text-align:center;">¿Cómo Funciona la Plataforma?</h2>
+            <p style="text-align:center;font-size:1.05em;margin-bottom:40px;max-width:700px;margin-left:auto;margin-right:auto;">
+                Puedes usar la evaluación emocional para ti mismo o para orientarte sobre el estado de alguien más. El sistema indicará el nivel de riesgo y qué pasos tomar.
+            </p>
+            <div class="semaforo-grid">
+                <div class="semaforo-card verde">
+                    <div class="semaforo-circulo">🟢</div>
+                    <h3>Riesgo Bajo</h3>
+                    <p>Recursos de bienestar, autocuidado y hábitos saludables para mantener el equilibrio emocional.</p>
+                </div>
+                <div class="semaforo-card amarillo">
+                    <div class="semaforo-circulo">🟡</div>
+                    <h3>Riesgo Medio</h3>
+                    <p>Señales de alerta, guías para familiares y recursos para buscar orientación profesional a tiempo.</p>
+                </div>
+                <div class="semaforo-card rojo">
+                    <div class="semaforo-circulo">🔴</div>
+                    <h3>Riesgo Alto</h3>
+                    <p>Líneas de emergencia, pasos inmediatos para familiares y contacto directo con un psicólogo.</p>
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:40px;">
+                <a href="encuesta.html" class="btn btn-primary">Comenzar Evaluación</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Factores de riesgo reales — CONASAMA 2024 -->
+    <section style="background-color:#fff;padding:60px 20px;">
+        <div class="container">
+            <h2 style="color:#003366;text-align:center;margin-bottom:8px;">¿Quiénes Tienen Mayor Riesgo?</h2>
+            <p style="text-align:center;color:#666;font-size:0.9em;margin-bottom:35px;">
+                Según CONASAMA y el INEGI (datos 2024) — conocer los factores de riesgo permite actuar a tiempo
+            </p>
+            <div class="semaforo-grid">
+                <div class="semaforo-card verde">
+                    <div class="semaforo-circulo">🧒</div>
+                    <h3>Niñez</h3>
+                    <p>Abuso físico, psicológico o sexual, acoso escolar (bullying) y divorcios conflictivos mal manejados son los principales factores de riesgo.</p>
+                </div>
+                <div class="semaforo-card amarillo">
+                    <div class="semaforo-circulo">🧑</div>
+                    <h3>Adolescentes y Jóvenes</h3>
+                    <p>Problemas con pares, decepciones amorosas, problemas familiares y consumo temprano de alcohol o drogas. <strong>El 52% de los casos en México ocurren en este grupo.</strong></p>
+                </div>
+                <div class="semaforo-card rojo">
+                    <div class="semaforo-circulo">👨</div>
+                    <h3>Adultos</h3>
+                    <p>Crisis económica, infidelidad, mal manejo de emociones y problemas de pareja. La tasa más alta está en hombres de 30 a 44 años (18.8 por 100,000 hab.).</p>
+                </div>
+            </div>
+            <div style="background:#e3f2fd;border-left:5px solid #1976d2;border-radius:8px;padding:18px 22px;margin-top:30px;text-align:left;max-width:750px;margin-left:auto;margin-right:auto;">
+                <p style="margin:0;font-size:0.95em;color:#0d47a1;">
+                    <strong>📌 Dato clave OMS:</strong> Por cada suicidio consumado, se estima que hay al menos <strong>20 intentos</strong>.
+                    El suicidio es prevenible cuando se detecta y actúa a tiempo.
+                    <em>(OMS, Prevención del Suicidio: un imperativo global)</em>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Papel de la familia -->
+    <section class="psychology-benefits" style="background-color:#f9f9f9;padding:60px 0;">
+        <div class="container" style="display:flex;align-items:center;flex-wrap:wrap;gap:30px;">
+            <div style="flex:1;min-width:280px;padding-right:20px;text-align:justify;">
+                <h2 style="color:#003366;">El Papel Clave de la Familia</h2>
+                <p>Los familiares y amigos cercanos son muchas veces los primeros en detectar señales de alerta. Su papel es fundamental en la prevención.</p>
+                <h3 style="color:#003366;">¿Qué puede hacer un familiar?</h3>
+                <ul style="list-style:none;padding:0;">
+                    <p>✅ Escuchar sin juzgar ni minimizar lo que siente la persona.</p>
+                    <p>✅ Preguntar directamente sobre pensamientos de hacerse daño.</p>
+                    <p>✅ Acompañar a buscar ayuda profesional.</p>
+                    <p>✅ Retirar medios de riesgo del entorno si es posible.</p>
+                    <p>✅ Contactar a un especialista para recibir orientación.</p>
+                </ul>
+                <a href="recursos.html" class="btn btn-primary" style="margin-top:15px;display:inline-block;">Ver Guía para Familiares</a>
+            </div>
+            <div style="flex:1;min-width:200px;">
+                <img src="assets/psychology.png" alt="Familia y prevención" class="img-responsive zoom-image" style="max-width:80%;height:auto;">
+            </div>
+        </div>
+    </section>
+
+    <!-- Especialista -->
+    <section class="about" style="padding:60px 0;background-color:#fff;">
+        <div class="container" style="display:flex;align-items:center;flex-wrap:wrap;gap:30px;">
+            <div style="flex:1;min-width:180px;">
+                <img src="assets/psicologo.png" alt="Psicóloga Eliza de la Torre" class="img-responsive zoom-image" style="max-width:80%;height:auto;border-radius:15px;">
+            </div>
+            <div style="flex:2;min-width:280px;text-align:justify;color:black;padding-left:20px;">
+                <h2 style="color:#003366;">Nuestra Especialista</h2>
+                <h3 style="color:#00509e;">Psicóloga Eliza de la Torre</h3>
+                <p>Especialista en salud mental y prevención del suicidio, la Psicóloga Eliza de la Torre lidera el contenido clínico de esta plataforma. Atiende tanto a personas en crisis como a sus familias, orientándolas en cómo brindar apoyo de manera efectiva y segura.</p>
+                <p>Su enfoque humanista garantiza un espacio de escucha sin juicios, con total confidencialidad, tanto para quien vive la crisis como para quienes los acompañan.</p>
+                <a href="contacto.html" class="btn btn-primary">Contactar a la Especialista</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Líneas de emergencia -->
+    <section style="background-color:#003366;color:white;padding:50px 0;text-align:center;">
+        <div class="container">
+            <h2 style="color:white;margin-bottom:10px;">🆘 Líneas de Emergencia</h2>
+            <p style="font-size:1.1em;margin-bottom:30px;">Si alguien está en peligro ahora mismo, llama de inmediato — también puedes llamar tú como familiar:</p>
+            <div class="pricing-grid">
+                <div class="emergency-card">
+                    <h3>Línea de la Vida</h3>
+                    <p class="price-em">800-911-2000</p>
+                    <p>CONASAMA — Gratuita, 24/7, nacional</p>
+                    <a href="tel:8009112000" class="btn btn-emergency" style="display:inline-block;margin-top:10px;">Llamar Ahora</a>
+                </div>
+                <div class="emergency-card">
+                    <h3>SAPTEL</h3>
+                    <p class="price-em">55 5259-8121</p>
+                    <p>Atención psicológica 24 horas, 365 días</p>
+                    <a href="tel:5552598121" class="btn btn-emergency" style="display:inline-block;margin-top:10px;">Llamar Ahora</a>
+                </div>
+                <div class="emergency-card">
+                    <h3>Emergencias</h3>
+                    <p class="price-em">911</p>
+                    <p>Para situaciones de peligro inmediato</p>
+                    <a href="tel:911" class="btn btn-emergency" style="display:inline-block;margin-top:10px;">Llamar 911</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer style="background-color:#001a3a;color:white;padding:20px 0;">
+        <div class="container">
+            <p>&copy; 2025 PsicoApoyo – TacoCoders | ITESCAM. Todos los derechos reservados.</p>
+            <p style="font-size:0.82em;opacity:0.7;">
+                Información estadística: INEGI, Estadísticas de Defunciones Registradas 2024 (cifras preliminares) |
+                OMS, Suicide worldwide 2024 | CONASAMA, PRONAPS 2024
+            </p>
+            <p style="font-size:0.82em;opacity:0.7;">Este sitio no reemplaza la atención médica profesional. Si hay peligro inmediato, llama al 911.</p>
+            <div class="social-media">
+                <a href="#" target="_blank"><img src="assets/facebook-icon.png" alt="Facebook"></a>
+                <a href="#" target="_blank"><img src="assets/instagram-icon.png" alt="Instagram"></a>
+                <a href="https://wa.me/529999000000" target="_blank"><img src="assets/whatsapp-icon.png" alt="WhatsApp"></a>
+            </div>
+        </div>
+    </footer>
+    <script src="app.js"></script>
+</body>
+</html>

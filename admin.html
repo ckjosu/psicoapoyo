@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Administrador — PsicoApoyo</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family:'Poppins',sans-serif; background:#f0f4f8; }
+.adm-wrap { max-width:1100px; margin:0 auto; padding:20px; }
+
+/* LOGIN */
+#pantalla-login { display:flex; align-items:center; justify-content:center; min-height:80vh; }
+.login-card { background:white; border-radius:16px; padding:40px 36px; box-shadow:0 4px 20px rgba(0,0,0,0.12); width:100%; max-width:400px; text-align:center; }
+.login-card h2 { color:#003366; margin:0 0 6px; }
+.login-card p  { color:#666; font-size:0.92em; margin:0 0 24px; }
+.login-inp { width:100%; padding:12px 14px; margin-bottom:12px; border:2px solid #e0e0e0; border-radius:8px; font-size:0.97em; font-family:'Poppins',sans-serif; box-sizing:border-box; }
+.login-inp:focus { outline:none; border-color:#7b1fa2; }
+.btn-login { width:100%; padding:13px; background:#4a148c; color:white; border:none; border-radius:8px; font-size:1em; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; }
+.btn-login:hover { background:#6a1b9a; }
+.login-err { color:#c62828; font-size:0.88em; margin-top:8px; display:none; }
+
+/* DASHBOARD */
+#pantalla-dashboard { display:none; }
+.top-bar { background:linear-gradient(135deg,#4a148c,#7b1fa2); color:white; padding:16px 24px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+.top-bar h2 { margin:0; font-size:1.2em; }
+.btn-salir { background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.4); color:white; padding:7px 18px; border-radius:20px; cursor:pointer; font-size:0.85em; font-family:'Poppins',sans-serif; }
+
+.tabs { display:flex; gap:4px; margin-bottom:20px; border-bottom:2px solid #e0e0e0; }
+.tab-btn { padding:11px 22px; border:none; background:transparent; font-family:'Poppins',sans-serif; font-size:0.95em; font-weight:600; color:#666; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; }
+.tab-btn.activo { color:#4a148c; border-bottom-color:#4a148c; }
+.tab-panel { display:none; }
+.tab-panel.activo { display:block; }
+
+.stats-row { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px; }
+.stat-card { background:white; border-radius:12px; padding:20px 24px; flex:1; min-width:140px; box-shadow:0 2px 8px rgba(0,0,0,0.07); text-align:center; }
+.stat-num  { font-size:2.2em; font-weight:700; color:#4a148c; }
+.stat-lbl  { font-size:0.82em; color:#666; margin-top:4px; }
+
+.panel-card { background:white; border-radius:12px; padding:22px; box-shadow:0 2px 8px rgba(0,0,0,0.07); margin-bottom:20px; }
+.panel-card h3 { color:#4a148c; margin:0 0 16px; font-size:1.05em; border-bottom:2px solid #f3e5f5; padding-bottom:10px; }
+
+/* TABLA PSICOLOGOS */
+.tbl { width:100%; border-collapse:collapse; font-size:0.9em; }
+.tbl th { background:#f3e5f5; color:#4a148c; padding:11px 14px; text-align:left; }
+.tbl td { padding:11px 14px; border-bottom:1px solid #f0f0f0; vertical-align:middle; }
+.tbl tr:hover td { background:#fafafa; }
+.badge-disp { display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.78em; font-weight:700; }
+.badge-disp.disponible { background:#e8f5e9; color:#2e7d32; }
+.badge-disp.limitado   { background:#fff8e1; color:#e65100; }
+.badge-disp.no         { background:#ffebee; color:#c62828; }
+.btn-sm { padding:5px 14px; border:none; border-radius:6px; cursor:pointer; font-size:0.82em; font-family:'Poppins',sans-serif; font-weight:600; }
+.btn-editar  { background:#e3f2fd; color:#1565c0; }
+.btn-eliminar{ background:#ffebee; color:#c62828; }
+
+/* FORMULARIO NUEVO PSICÓLOGO */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:600px){ .form-grid { grid-template-columns:1fr; } }
+.inp-admin { width:100%; padding:10px 12px; border:2px solid #e0e0e0; border-radius:8px; font-family:'Poppins',sans-serif; font-size:0.93em; box-sizing:border-box; }
+.inp-admin:focus { outline:none; border-color:#7b1fa2; }
+.btn-agregar { background:#4a148c; color:white; border:none; border-radius:8px; padding:12px 28px; cursor:pointer; font-family:'Poppins',sans-serif; font-weight:700; font-size:0.95em; margin-top:6px; }
+.btn-agregar:hover { background:#6a1b9a; }
+
+/* SOLICITUDES ADMIN */
+.sol-row { display:flex; gap:10px; align-items:flex-start; padding:14px 16px; border-bottom:1px solid #f0f0f0; }
+.sol-row:last-child { border-bottom:none; }
+.sol-nivel { width:10px; border-radius:4px; align-self:stretch; flex-shrink:0; }
+.sol-body  { flex:1; }
+.sol-meta  { font-size:0.8em; color:#999; }
+.sol-msg   { font-size:0.9em; margin-top:4px; color:#333; }
+
+.toast { position:fixed; bottom:24px; right:24px; background:#4a148c; color:white; padding:12px 22px; border-radius:10px; font-size:0.93em; display:none; z-index:9999; font-family:'Poppins',sans-serif; }
+</style>
+</head>
+<body>
+
+<nav class="navbar fixed">
+  <ul>
+    <li><a href="index.html">Inicio</a></li>
+    <li><a href="encuesta.html">Evaluar Estado Emocional</a></li>
+    <li><a href="recursos.html">Recursos de Apoyo</a></li>
+    <li><a href="contacto.html">Contacto</a></li>
+    <li><a href="psicologo.html">Portal Psicólogo</a></li>
+  </ul>
+</nav>
+
+<div style="padding-top:80px;">
+<div class="adm-wrap">
+
+<!-- ===== LOGIN ===== -->
+<div id="pantalla-login">
+  <div class="login-card">
+    <div style="font-size:3em;margin-bottom:12px;">🛡️</div>
+    <h2>Panel Administrador</h2>
+    <p>Acceso restringido. Solo para administradores del sistema PsicoApoyo.</p>
+    <input class="login-inp" type="text" id="log-usuario" placeholder="Usuario administrador">
+    <input class="login-inp" type="password" id="log-pass" placeholder="Contraseña">
+    <button class="btn-login" onclick="intentarLogin()">Entrar al Panel</button>
+    <p class="login-err" id="login-err">Credenciales incorrectas.</p>
+    <p style="font-size:0.78em;color:#aaa;margin-top:18px;">
+      Demo: usuario <strong>admin</strong> / contraseña <strong>admin2025</strong>
+    </p>
+    <p style="font-size:0.78em;color:#aaa;">
+      ¿Eres psicólogo/a? <a href="psicologo.html" style="color:#4a148c;">Ir al portal de psicólogos</a>
+    </p>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="pantalla-dashboard">
+
+  <div class="top-bar">
+    <div>
+      <h2>🛡️ Panel de Administración — PsicoApoyo</h2>
+      <span id="fecha-top"></span>
+    </div>
+    <button class="btn-salir" onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
+
+  <!-- Stats globales -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="adm-stat-psicologos">0</div>
+      <div class="stat-lbl">Psicólogos registrados</div>
+    </div>
+    <div class="stat-card" style="border-top:4px solid #e53935;">
+      <div class="stat-num" id="adm-stat-rojo" style="color:#c62828;">0</div>
+      <div class="stat-lbl">Solicitudes riesgo alto</div>
+    </div>
+    <div class="stat-card" style="border-top:4px solid #ffb300;">
+      <div class="stat-num" id="adm-stat-amarillo" style="color:#e65100;">0</div>
+      <div class="stat-lbl">Solicitudes riesgo medio</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="adm-stat-total">0</div>
+      <div class="stat-lbl">Solicitudes totales</div>
+    </div>
+    <div class="stat-card" style="border-top:4px solid #e53935;">
+      <div class="stat-num" id="adm-stat-sin-leer" style="color:#c62828;">0</div>
+      <div class="stat-lbl">Sin atender</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn activo" onclick="cambiarTab('psicologos')">👨‍⚕️ Psicólogos</button>
+    <button class="tab-btn"       onclick="cambiarTab('solicitudes')">📩 Solicitudes</button>
+    <button class="tab-btn"       onclick="cambiarTab('config')">⚙️ Configuración</button>
+  </div>
+
+  <!-- TAB: PSICÓLOGOS -->
+  <div class="tab-panel activo" id="tab-psicologos">
+    <div class="panel-card">
+      <h3>➕ Registrar Nuevo Psicólogo</h3>
+      <div class="form-grid">
+        <input class="inp-admin" id="np-nombre" placeholder="Nombre completo *">
+        <input class="inp-admin" id="np-usuario" placeholder="Usuario de acceso *">
+        <input class="inp-admin" id="np-pass" type="password" placeholder="Contraseña inicial *">
+        <input class="inp-admin" id="np-cedula" placeholder="Cédula profesional">
+        <input class="inp-admin" id="np-especialidad" placeholder="Especialidad">
+        <input class="inp-admin" id="np-correo" placeholder="Correo profesional">
+        <input class="inp-admin" id="np-tel" placeholder="Teléfono">
+        <select class="inp-admin" id="np-disponible">
+          <option value="disponible">✅ Disponible</option>
+          <option value="limitado">⚠️ Disponibilidad limitada</option>
+          <option value="no">❌ No disponible</option>
+        </select>
+      </div>
+      <button class="btn-agregar" onclick="agregarPsicologo()">➕ Registrar Psicólogo</button>
+    </div>
+
+    <div class="panel-card">
+      <h3>📋 Psicólogos Registrados</h3>
+      <div id="tabla-psicologos"></div>
+    </div>
+  </div>
+
+  <!-- TAB: SOLICITUDES -->
+  <div class="tab-panel" id="tab-solicitudes">
+    <div class="panel-card">
+      <h3>📩 Todas las Solicitudes de Contacto</h3>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <button onclick="filtrarAdm('todas')"    class="filtro-adm activo" id="fa-todas">Todas</button>
+        <button onclick="filtrarAdm('rojo')"     class="filtro-adm" id="fa-rojo"     style="border-color:#e53935;color:#c62828;">🔴 Alto</button>
+        <button onclick="filtrarAdm('amarillo')" class="filtro-adm" id="fa-amarillo" style="border-color:#ffb300;color:#e65100;">🟡 Medio</button>
+        <button onclick="filtrarAdm('verde')"    class="filtro-adm" id="fa-verde"    style="border-color:#4caf50;color:#2e7d32;">🟢 Bajo</button>
+        <button onclick="filtrarAdm('sin-leer')" class="filtro-adm" id="fa-sin-leer">Sin atender</button>
+        <button onclick="limpiarTodasSolicitudes()" style="margin-left:auto;" class="filtro-adm" style="border-color:#e53935;color:#c62828;">🗑 Limpiar todo</button>
+      </div>
+      <div id="adm-lista-sols"></div>
+    </div>
+  </div>
+
+  <!-- TAB: CONFIG -->
+  <div class="tab-panel" id="tab-config">
+    <div class="panel-card">
+      <h3>⚙️ Configuración del Sistema</h3>
+      <p style="font-size:0.9em;color:#666;margin-bottom:18px;">Ajustes generales de la plataforma PsicoApoyo.</p>
+      <label style="font-weight:600;font-size:0.9em;display:block;margin-bottom:6px;">Nombre de la plataforma</label>
+      <input class="inp-admin" id="cfg-nombre" value="PsicoApoyo" style="max-width:400px;display:block;margin-bottom:14px;">
+      <label style="font-weight:600;font-size:0.9em;display:block;margin-bottom:6px;">Mensaje de bienvenida (página de inicio)</label>
+      <textarea class="inp-admin" id="cfg-bienvenida" rows="3" style="max-width:600px;display:block;margin-bottom:14px;">Esta plataforma está diseñada para familias, amigos y personas cercanas que quieren apoyar a alguien en crisis emocional.</textarea>
+      <label style="font-weight:600;font-size:0.9em;display:block;margin-bottom:6px;">Teléfono de emergencia principal</label>
+      <input class="inp-admin" id="cfg-tel" value="800-911-2000" style="max-width:300px;display:block;margin-bottom:20px;">
+      <button class="btn-agregar" onclick="guardarConfig()">💾 Guardar Configuración</button>
+    </div>
+    <div class="panel-card">
+      <h3>🗑 Herramientas de Mantenimiento</h3>
+      <p style="font-size:0.88em;color:#666;">Estas acciones son irreversibles. Úsalas con cuidado.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;">
+        <button onclick="limpiarTodasSolicitudes()" style="background:#ef5350;color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600;">🗑 Borrar todas las solicitudes</button>
+        <button onclick="limpiarPsicologos()" style="background:#ef5350;color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600;">🗑 Borrar psicólogos extras</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<style>
+.filtro-adm { padding:6px 16px; border:2px solid #4a148c; border-radius:20px; background:white; color:#4a148c; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.85em; font-weight:600; }
+.filtro-adm.activo { background:#4a148c; color:white; }
+</style>
+
+<script>
+// ============================================================
+// ADMIN LOGIN
+// ============================================================
+var ADMIN_CREDS = { usuario: 'admin', pass: 'admin2025' };
+var filtroAdmActual = 'todas';
+var API_URL = 'api.php';
+
+function intentarLogin() {
+  var u = document.getElementById('log-usuario').value.trim();
+  var p = document.getElementById('log-pass').value.trim();
+  if (u === ADMIN_CREDS.usuario && p === ADMIN_CREDS.pass) {
+    document.getElementById('login-err').style.display = 'none';
+    mostrarDashboard();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+
+function cerrarSesion() {
+  document.getElementById('pantalla-dashboard').style.display = 'none';
+  document.getElementById('pantalla-login').style.display = 'flex';
+  document.getElementById('log-pass').value = '';
+}
+
+function mostrarDashboard() {
+  document.getElementById('pantalla-login').style.display = 'none';
+  document.getElementById('pantalla-dashboard').style.display = 'block';
+  var ahora = new Date();
+  document.getElementById('fecha-top').textContent = ahora.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  actualizarStats();
+  renderTabla();
+  renderSolicitudesAdm();
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function cambiarTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('activo'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('activo'); });
+  document.getElementById('tab-' + tab).classList.add('activo');
+  event.target.classList.add('activo');
+  if (tab === 'solicitudes') cargarSolicitudesAdmin();
+}
+
+// ============================================================
+// PSICÓLOGOS
+// ============================================================
+var PSICOLOGOS_DEFECTO = [
+  { nombre:'Dra. Eliza de la Torre', usuario:'dra.eliza', pass:'psico2025', cedula:'PAS-2024-001', especialidad:'Psicología Clínica', correo:'eliza@psicoapoyo.mx', tel:'999-000-0001', disponible:'disponible' }
+];
+
+function getPsicologos() {
+  try { return JSON.parse(localStorage.getItem('psicoapoyo_psicologos') || 'null') || PSICOLOGOS_DEFECTO; }
+  catch(e) { return PSICOLOGOS_DEFECTO; }
+}
+function setPsicologos(arr) { localStorage.setItem('psicoapoyo_psicologos', JSON.stringify(arr)); }
+
+function agregarPsicologo() {
+  var nombre = document.getElementById('np-nombre').value.trim();
+  var usuario = document.getElementById('np-usuario').value.trim();
+  var pass   = document.getElementById('np-pass').value.trim();
+  if (!nombre || !usuario || !pass) { mostrarToast('⚠️ Nombre, usuario y contraseña son obligatorios'); return; }
+  var arr = getPsicologos();
+  if (arr.find(function(p){ return p.usuario === usuario; })) { mostrarToast('❌ Ese usuario ya existe'); return; }
+  arr.push({
+    nombre: nombre, usuario: usuario, pass: pass,
+    cedula: document.getElementById('np-cedula').value,
+    especialidad: document.getElementById('np-especialidad').value,
+    correo: document.getElementById('np-correo').value,
+    tel: document.getElementById('np-tel').value,
+    disponible: document.getElementById('np-disponible').value
+  });
+  setPsicologos(arr);
+  ['np-nombre','np-usuario','np-pass','np-cedula','np-especialidad','np-correo','np-tel'].forEach(function(id){ document.getElementById(id).value=''; });
+  cargarPsicologosAdmin();
+  cargarSolicitudesAdmin();
+  cargarEstadisticasAdmin();
+  mostrarToast('✅ Psicólogo/a registrado/a correctamente');
+}
+
+function eliminarPsicologo(usuario) {
+  if (!confirm('¿Eliminar a este psicólogo/a del sistema?')) return;
+  var arr = getPsicologos().filter(function(p){ return p.usuario !== usuario; });
+  setPsicologos(arr);
+  renderTabla();
+  actualizarStats();
+  mostrarToast('🗑 Psicólogo/a eliminado/a');
+}
+
+function renderTabla() {
+  var arr = getPsicologos();
+  var perfiles = JSON.parse(localStorage.getItem('psicoapoyo_perfiles_publicos') || '{}');
+  if (arr.length === 0) {
+    document.getElementById('tabla-psicologos').innerHTML = '<p style="color:#aaa;text-align:center;padding:20px;">Sin psicólogos registrados.</p>';
+    return;
+  }
+  var html = '<table class="tbl"><thead><tr><th>Nombre</th><th>Usuario</th><th>Cédula</th><th>Especialidad</th><th>Correo</th><th>Disponibilidad</th><th>Acciones</th></tr></thead><tbody>';
+  arr.forEach(function(p) {
+    var pub = perfiles[p.usuario] || {};
+    var disp = pub.disponible || p.disponible || 'disponible';
+    var dispLabel = {disponible:'✅ Disponible', limitado:'⚠️ Limitada', no:'❌ No disponible'}[disp] || disp;
+    html += '<tr>' +
+      '<td><strong>' + (p.nombre||'—') + '</strong></td>' +
+      '<td>' + p.usuario + '</td>' +
+      '<td>' + (p.cedula||'—') + '</td>' +
+      '<td>' + (pub.especialidad||p.especialidad||'—') + '</td>' +
+      '<td>' + (pub.correo||p.correo||'—') + '</td>' +
+      '<td><span class="badge-disp ' + disp + '">' + dispLabel + '</span></td>' +
+      '<td><button class="btn-sm btn-eliminar" onclick="eliminarPsicologo(\'' + p.usuario + '\')">Eliminar</button></td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('tabla-psicologos').innerHTML = html;
+}
+
+// ============================================================
+// SOLICITUDES ADMIN
+// ============================================================
+function getSolicitudes() {
+  try { return JSON.parse(localStorage.getItem('psicoapoyo_solicitudes') || '[]'); }
+  catch(e) { return []; }
+}
+
+function cargarSolicitudesAdmin() {
+  fetch(API_URL + '?accion=solicitudes')
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    if (res.ok) {
+      // Normalizar y guardar en localStorage para que renderSolicitudesAdm lo use
+      var sols = (res.datos||[]).map(function(s){
+        return {
+          id: s.id_solicitud, fecha: s.fecha_envio,
+          nombre: s.nombre_solicitante, contacto: s.contacto,
+          quien: s.tipo_solicitante, medio: s.medio_respuesta,
+          mensaje: s.mensaje, nivel: s.nivel_riesgo,
+          leido: s.estado !== 'nueva', estado: s.estado
+        };
+      });
+      localStorage.setItem('psicoapoyo_solicitudes', JSON.stringify(sols));
+    }
+    actualizarStats();
+    renderSolicitudesAdm();
+  })
+  .catch(function(){
+    actualizarStats();
+    renderSolicitudesAdm();
+  });
+}
+
+function cargarEstadisticasAdmin() {
+  fetch(API_URL + '?accion=estadisticas')
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    if (res.ok && res.datos) {
+      document.getElementById('adm-stat-total').textContent    = res.datos.total      || 0;
+      document.getElementById('adm-stat-rojo').textContent     = res.datos.rojas      || 0;
+      document.getElementById('adm-stat-amarillo').textContent = res.datos.amarillas  || 0;
+      document.getElementById('adm-stat-sin-leer').textContent = res.datos.sin_atender|| 0;
+    }
+  }).catch(function(){});
+}
+
+function cargarPsicologosAdmin() {
+  fetch(API_URL + '?accion=psicologos')
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    if (res.ok) {
+      // Guardar en localStorage para que renderTabla lo use
+      localStorage.setItem('psicoapoyo_psicologos', JSON.stringify(res.datos||[]));
+      renderTabla();
+      document.getElementById('adm-stat-psicologos').textContent = (res.datos||[]).length;
+    }
+  }).catch(function(){ renderTabla(); });
+}
+
+function filtrarAdm(f) {
+  filtroAdmActual = f;
+  document.querySelectorAll('.filtro-adm').forEach(function(b){ b.classList.remove('activo'); });
+  document.getElementById('fa-' + f).classList.add('activo');
+  renderSolicitudesAdm();
+}
+
+function renderSolicitudesAdm() {
+  var sols = getSolicitudes();
+  var orden = {rojo:0,amarillo:1,verde:2};
+  sols.sort(function(a,b){ var oa=orden[a.nivel]||2,ob=orden[b.nivel]||2; return oa!==ob?(oa-ob):(b.fecha||0)-(a.fecha||0); });
+
+  var filtradas = sols;
+  if (filtroAdmActual==='rojo')     filtradas = sols.filter(function(s){return s.nivel==='rojo';});
+  if (filtroAdmActual==='amarillo') filtradas = sols.filter(function(s){return s.nivel==='amarillo';});
+  if (filtroAdmActual==='verde')    filtradas = sols.filter(function(s){return s.nivel==='verde';});
+  if (filtroAdmActual==='sin-leer') filtradas = sols.filter(function(s){return !s.leido;});
+
+  var cont = document.getElementById('adm-lista-sols');
+  if (!filtradas.length) { cont.innerHTML='<p style="text-align:center;color:#aaa;padding:24px;">Sin solicitudes en esta categoría.</p>'; return; }
+  var colores = {rojo:'#e53935',amarillo:'#ffb300',verde:'#4caf50'};
+  var nivelLabel = {rojo:'🔴 Alto',amarillo:'🟡 Medio',verde:'🟢 Bajo'};
+  cont.innerHTML = filtradas.map(function(s) {
+    var fecha = s.fecha ? new Date(s.fecha).toLocaleString('es-MX') : '';
+    var c = colores[s.nivel]||'#ccc';
+    return '<div class="sol-row">' +
+      '<div class="sol-nivel" style="background:'+c+';"></div>' +
+      '<div class="sol-body">' +
+        '<strong>' + (s.nombre||'Anónimo') + '</strong>' +
+        ' <span class="sol-badge '+(s.nivel||'verde')+'" style="font-size:0.75em;padding:2px 8px;border-radius:10px;display:inline-block;">' + (nivelLabel[s.nivel]||'') + '</span>' +
+        (s.leido ? '' : ' <span style="background:#e53935;color:white;font-size:0.7em;padding:2px 7px;border-radius:10px;">NUEVO</span>') +
+        '<div class="sol-meta">'+fecha+' · Contacto: '+(s.contacto||'N/D')+' · Medio: '+(s.medio||'N/D')+'</div>' +
+        '<div class="sol-msg">'+(s.mensaje||'Sin mensaje')+'</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function limpiarTodasSolicitudes() {
+  if (!confirm('¿Borrar TODAS las solicitudes? Esta acción no se puede deshacer.')) return;
+  localStorage.removeItem('psicoapoyo_solicitudes');
+  actualizarStats();
+  renderSolicitudesAdm();
+  mostrarToast('🗑 Todas las solicitudes eliminadas');
+}
+
+function limpiarPsicologos() {
+  if (!confirm('¿Eliminar todos los psicólogos agregados manualmente (se restaurarán los de demostración)?')) return;
+  localStorage.removeItem('psicoapoyo_psicologos');
+  renderTabla();
+  actualizarStats();
+  mostrarToast('🗑 Psicólogos extras eliminados');
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function actualizarStats() {
+  var sols = getSolicitudes();
+  var psics = getPsicologos();
+  document.getElementById('adm-stat-psicologos').textContent = psics.length;
+  document.getElementById('adm-stat-total').textContent      = sols.length;
+  document.getElementById('adm-stat-rojo').textContent       = sols.filter(function(s){return s.nivel==='rojo';}).length;
+  document.getElementById('adm-stat-amarillo').textContent   = sols.filter(function(s){return s.nivel==='amarillo';}).length;
+  document.getElementById('adm-stat-sin-leer').textContent   = sols.filter(function(s){return !s.leido;}).length;
+}
+
+// ============================================================
+// CONFIG
+// ============================================================
+function guardarConfig() {
+  var cfg = {
+    nombre: document.getElementById('cfg-nombre').value,
+    bienvenida: document.getElementById('cfg-bienvenida').value,
+    tel: document.getElementById('cfg-tel').value
+  };
+  localStorage.setItem('psicoapoyo_config', JSON.stringify(cfg));
+  mostrarToast('✅ Configuración guardada');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function mostrarToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(function(){ t.style.display='none'; }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('log-pass').addEventListener('keypress', function(e){
+    if(e.key==='Enter') intentarLogin();
+  });
+});
+</script>
+
+<script src="app.js"></script>
+</body>
+</html>

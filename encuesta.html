@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación Emocional - PsicoApoyo</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Poppins', sans-serif; }
+
+/* PERSPECTIVA */
+.persp-btns { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:20px 0 8px; }
+.persp-btn {
+  padding:12px 28px; border-radius:50px; border:2px solid #003366;
+  background:white; color:#003366; font-weight:600; font-size:1em;
+  cursor:pointer; font-family:'Poppins',sans-serif; transition:all 0.2s;
+}
+.persp-btn.activo { background:#003366; color:white; }
+#aviso-persp { display:none; max-width:700px; margin:0 auto 18px; padding:12px 16px; border-radius:8px; font-size:0.93em; }
+
+/* PREGUNTAS */
+.pregunta-card {
+  background:white; border-radius:10px; padding:22px;
+  margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.08); text-align:left;
+}
+.pregunta-num   { font-size:0.82em; color:#999; margin:0 0 4px; }
+.pregunta-texto { font-size:1.05em; font-weight:600; color:#003366; margin:0 0 14px; }
+.opciones { display:flex; flex-direction:column; gap:8px; }
+.opciones label {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; border-radius:8px; border:2px solid #e0e0e0;
+  cursor:pointer; font-size:0.93em; transition:all 0.15s;
+}
+.opciones label:hover { border-color:#003366; background:#eaf4ff; }
+.opciones label.ok { background:#dbeafe !important; border-color:#003366 !important; font-weight:600; }
+.opciones input[type=radio] { width:17px; height:17px; accent-color:#003366; flex-shrink:0; }
+
+#err-msg {
+  display:none; background:#ffebee; border:2px solid #e53935;
+  border-radius:8px; padding:12px; margin:10px auto 15px;
+  color:#b71c1c; font-weight:600; text-align:center; max-width:700px;
+}
+
+/* RESULTADO */
+#resultado { display:none; max-width:700px; margin:40px auto 20px; border-radius:16px; padding:35px 25px; text-align:center; }
+.badge { display:inline-block; border-radius:20px; padding:5px 16px; font-size:0.82em; font-weight:600; margin-bottom:15px; }
+
+/* SEMÁFORO */
+.sema { display:inline-flex; flex-direction:column; align-items:center; background:#1a1a1a; border-radius:20px; padding:16px 20px; gap:12px; margin-bottom:18px; }
+.sema-fila { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.sema-circulo { width:52px; height:52px; border-radius:50%; }
+.sema-txt { font-size:0.62em; font-weight:700; letter-spacing:1px; }
+
+.res-titulo { font-size:1.7em; font-weight:700; margin:0 0 12px; }
+.res-desc   { font-size:1em; color:#444; margin:0 auto 18px; max-width:580px; line-height:1.6; }
+
+.recs-caja { background:white; border-radius:10px; padding:20px 22px; text-align:left; margin:14px 0; }
+.recs-caja h3 { margin:0 0 12px; font-size:1.05em; }
+.rec-fila { display:flex; gap:10px; margin:9px 0; font-size:0.93em; line-height:1.5; }
+.rec-fila .ico { flex-shrink:0; }
+
+.res-btns { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:18px; }
+.res-btns a {
+  display:inline-block; padding:12px 24px; border-radius:50px;
+  font-weight:700; text-decoration:none; font-size:0.92em;
+  font-family:'Poppins',sans-serif; border:none; cursor:pointer;
+}
+.res-btns a.azul { background:#00509e; color:white; }
+.res-btns a.gris { background:#6c757d; color:white; }
+.res-btns a.rojo { background:#e53935; color:white; }
+
+.nota-legal { font-size:0.76em; color:#aaa; margin-top:18px; }
+.btn-volver { margin-top:14px; background:#546e7a; color:white; border:none; border-radius:50px; padding:10px 26px; font-size:0.88em; cursor:pointer; font-family:'Poppins',sans-serif; }
+.btn-volver:hover { background:#37474f; }
+
+/* BANNER EMERGENCIA */
+#banner-sos {
+  display:none; position:fixed; bottom:0; left:0; right:0;
+  background:#c62828; color:white; padding:12px 20px; z-index:9999;
+  align-items:center; justify-content:center;
+  flex-wrap:wrap; gap:10px; font-weight:600; font-size:0.93em;
+  box-shadow:0 -3px 12px rgba(0,0,0,.3);
+}
+#banner-sos a { color:white; background:rgba(255,255,255,.2); padding:5px 14px; border-radius:20px; text-decoration:none; font-weight:700; }
+#banner-sos button { background:transparent; border:1px solid white; color:white; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:0.9em; }
+
+/* barra de progreso */
+#barra-prog-wrap { max-width:700px; margin:0 auto 18px; }
+#barra-prog-txt { font-size:0.82em; color:#666; margin-bottom:4px; }
+#barra-prog { height:8px; background:#e0e0e0; border-radius:10px; overflow:hidden; }
+#barra-prog-inner { height:8px; background:#003366; border-radius:10px; transition:width 0.3s; width:0%; }
+
+@media(max-width:600px){
+  .sema { flex-direction:row; border-radius:40px; gap:14px; padding:12px 16px; }
+  .sema-circulo { width:40px; height:40px; }
+  .res-btns { flex-direction:column; align-items:center; }
+  .res-btns a { width:88%; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar fixed">
+  <ul>
+    <li><a href="index.html">Inicio</a></li>
+    <li><a href="encuesta.html">Evaluar Estado Emocional</a></li>
+    <li><a href="recursos.html">Recursos de Apoyo</a></li>
+    <li><a href="contacto.html">Contacto</a></li>
+    <li><a href="psicologo.html" style="opacity:0.7;font-size:0.85em;">🩺 Psicólogos</a></li>
+  </ul>
+</nav>
+
+<section style="background:#eaf4ff; padding:100px 20px 60px;">
+<div class="container">
+
+  <h2 style="color:#003366; text-align:center; font-size:2em; margin-bottom:6px;">
+    Evaluación de Estado Emocional
+  </h2>
+  <p style="text-align:center; color:#555; max-width:680px; margin:0 auto 28px; font-size:0.97em;">
+    Cuestionario <strong>confidencial</strong> de 14 preguntas. No es un diagnóstico clínico,
+    sirve para orientar el nivel de atención necesario.
+  </p>
+
+  <!-- PERSPECTIVA -->
+  <div style="max-width:700px; margin:0 auto; text-align:center; background:white; border-radius:14px; padding:22px 20px 18px; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:22px;">
+    <p style="font-weight:600; color:#003366; margin:0 0 12px; font-size:1.05em;">Paso 1 — ¿Desde qué perspectiva respondes?</p>
+    <div class="persp-btns">
+      <button class="persp-btn" id="btn-fam" onclick="setPersp('familiar')">
+        👨‍👩‍👧 Soy familiar o amigo/a
+      </button>
+      <button class="persp-btn" id="btn-per" onclick="setPersp('personal')">
+        💙 Respondo por mí mismo/a
+      </button>
+    </div>
+    <div id="aviso-persp"></div>
+  </div>
+
+  <!-- BARRA DE PROGRESO -->
+  <div id="barra-prog-wrap">
+    <p id="barra-prog-txt">Pregunta 0 de 14 respondidas</p>
+    <div id="barra-prog"><div id="barra-prog-inner"></div></div>
+  </div>
+
+  <!-- ERROR -->
+  <div id="err-msg"></div>
+
+  <!-- FORMULARIO -->
+  <div id="form-enc" style="max-width:700px; margin:0 auto;">
+
+    <div class="pregunta-card" id="card-q1">
+      <p class="pregunta-num">Pregunta 1 de 14</p>
+      <p class="pregunta-texto">¿Con qué frecuencia ha tenido pensamientos de hacerse daño o de no querer seguir viviendo?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q1" value="0"> Nunca, no ha tenido esos pensamientos</label>
+        <label><input type="radio" name="q1" value="1"> Alguna vez, de manera pasajera</label>
+        <label><input type="radio" name="q1" value="2"> Con frecuencia, varios días a la semana</label>
+        <label><input type="radio" name="q1" value="3"> Casi todo el tiempo, es algo constante</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q2">
+      <p class="pregunta-num">Pregunta 2 de 14</p>
+      <p class="pregunta-texto">¿Ha expresado que "sería mejor no estar aquí", que es "una carga para otros" o que quiere desaparecer?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q2" value="0"> No, en absoluto</label>
+        <label><input type="radio" name="q2" value="1"> A veces lo ha mencionado sin mucha insistencia</label>
+        <label><input type="radio" name="q2" value="2"> Con frecuencia lo expresa</label>
+        <label><input type="radio" name="q2" value="3"> Lo menciona constantemente y con convicción</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q3">
+      <p class="pregunta-num">Pregunta 3 de 14</p>
+      <p class="pregunta-texto">¿Cómo describirías el estado de ánimo general en los últimos 15 días?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q3" value="0"> Bien, estable emocionalmente</label>
+        <label><input type="radio" name="q3" value="1"> Un poco triste, ansioso/a o irritable</label>
+        <label><input type="radio" name="q3" value="2"> Bastante mal, con sensación de desesperanza frecuente</label>
+        <label><input type="radio" name="q3" value="3"> No encuentra ningún sentido a nada, vacío/a emocionalmente</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q4">
+      <p class="pregunta-num">Pregunta 4 de 14</p>
+      <p class="pregunta-texto">¿Ha podido dormir y alimentarse con normalidad últimamente?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q4" value="0"> Sí, sin problemas notables</label>
+        <label><input type="radio" name="q4" value="1"> Con algunas dificultades (duerme poco o duerme demasiado)</label>
+        <label><input type="radio" name="q4" value="2"> Le cuesta mucho, hay cambios evidentes en su rutina</label>
+        <label><input type="radio" name="q4" value="3"> Casi no duerme ni come; hay descuido importante de sí mismo/a</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q5">
+      <p class="pregunta-num">Pregunta 5 de 14</p>
+      <p class="pregunta-texto">¿Ha tenido un plan concreto o ha buscado medios para hacerse daño (medicamentos, objetos, etc.)?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q5" value="0"> No, nada de eso</label>
+        <label><input type="radio" name="q5" value="1"> Ha hablado vagamente de cómo podría hacerlo</label>
+        <label><input type="radio" name="q5" value="2"> Ha pensado en un método o ha buscado información al respecto</label>
+        <label><input type="radio" name="q5" value="3"> Tiene o ha tenido acceso a medios y ha pensado en usarlos</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q6">
+      <p class="pregunta-num">Pregunta 6 de 14</p>
+      <p class="pregunta-texto">¿Cuenta con personas cercanas de confianza con quienes hablar cuando lo necesita?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q6" value="0"> Sí, tiene buen apoyo familiar o de amigos</label>
+        <label><input type="radio" name="q6" value="1"> Tiene algunas personas, pero el apoyo es limitado</label>
+        <label><input type="radio" name="q6" value="2"> Casi no tiene a nadie con quien hablar abiertamente</label>
+        <label><input type="radio" name="q6" value="3"> Se siente completamente solo/a, sin ningún apoyo</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q7">
+      <p class="pregunta-num">Pregunta 7 de 14</p>
+      <p class="pregunta-texto">¿Cómo ve su futuro en este momento?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q7" value="0"> Con esperanza, ve posibilidades adelante</label>
+        <label><input type="radio" name="q7" value="1"> Con algunas dudas, pero aún tiene esperanza</label>
+        <label><input type="radio" name="q7" value="2"> Con mucha incertidumbre, no ve salida a sus problemas</label>
+        <label><input type="radio" name="q7" value="3"> Sin ninguna esperanza, siente que las cosas no van a mejorar</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q8">
+      <p class="pregunta-num">Pregunta 8 de 14</p>
+      <p class="pregunta-texto">¿Ha habido cambios repentinos en su comportamiento o se ha aislado de sus amigos y familia?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q8" value="0"> No, se comporta normalmente</label>
+        <label><input type="radio" name="q8" value="1"> Algunos cambios, pero no muy notables</label>
+        <label><input type="radio" name="q8" value="2"> Sí, hay cambios evidentes: se aísla o su actitud cambió bastante</label>
+        <label><input type="radio" name="q8" value="3"> Cambio drástico: ya no habla con nadie, ha regalado pertenencias o se despide de manera inusual</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q9">
+      <p class="pregunta-num">Pregunta 9 de 14</p>
+      <p class="pregunta-texto">¿Ha consumido alcohol u otras sustancias con mayor frecuencia para manejar sus emociones?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q9" value="0"> No, no consume o lo hace raramente</label>
+        <label><input type="radio" name="q9" value="1"> Ocasionalmente como "escape" emocional</label>
+        <label><input type="radio" name="q9" value="2"> Con frecuencia, es una forma habitual de lidiar con sus problemas</label>
+        <label><input type="radio" name="q9" value="3"> Diariamente o en grandes cantidades para entumecerse</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q10">
+      <p class="pregunta-num">Pregunta 10 de 14</p>
+      <p class="pregunta-texto">¿Ha vivido situaciones de pérdida reciente, trauma o estrés muy intenso (pérdida de trabajo, relación, duelo, etc.)?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q10" value="0"> No, su vida está relativamente estable</label>
+        <label><input type="radio" name="q10" value="1"> Hay algo de estrés, pero lo maneja</label>
+        <label><input type="radio" name="q10" value="2"> Sí, ha pasado por una situación difícil recientemente y le cuesta recuperarse</label>
+        <label><input type="radio" name="q10" value="3"> Ha vivido una pérdida o trauma grave y parece desbordado/a por ello</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q11">
+      <p class="pregunta-num">Pregunta 11 de 14</p>
+      <p class="pregunta-texto">¿Ha buscado o recibido atención profesional de salud mental anteriormente?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q11" value="0"> Sí, ha recibido ayuda y le funcionó bien</label>
+        <label><input type="radio" name="q11" value="1"> Lo intentó, pero no continuó el proceso</label>
+        <label><input type="radio" name="q11" value="2"> Nunca lo ha buscado aunque lo necesitaría</label>
+        <label><input type="radio" name="q11" value="3"> No cree que nadie pueda ayudarle o se niega a buscar apoyo</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q12">
+      <p class="pregunta-num">Pregunta 12 de 14</p>
+      <p class="pregunta-texto">¿Ha tenido intentos de suicidio o autolesiones en el pasado?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q12" value="0"> No, nunca</label>
+        <label><input type="radio" name="q12" value="1"> Ha tenido pensamientos pero no llegó a actuar</label>
+        <label><input type="radio" name="q12" value="2"> Tuvo un intento o autolesión en el pasado</label>
+        <label><input type="radio" name="q12" value="3"> Ha tenido más de un intento o lo hace con frecuencia</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q13">
+      <p class="pregunta-num">Pregunta 13 de 14</p>
+      <p class="pregunta-texto">¿Cómo es la relación con su entorno familiar cercano actualmente?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q13" value="0"> Buena, hay comunicación y apoyo</label>
+        <label><input type="radio" name="q13" value="1"> Con algunos conflictos pero manejables</label>
+        <label><input type="radio" name="q13" value="2"> Hay conflictos frecuentes o distanciamiento importante</label>
+        <label><input type="radio" name="q13" value="3"> Relación muy deteriorada, hay violencia, abandono o rechazo</label>
+      </div>
+    </div>
+
+    <div class="pregunta-card" id="card-q14">
+      <p class="pregunta-num">Pregunta 14 de 14</p>
+      <p class="pregunta-texto">¿Habla o expresa abiertamente cómo se siente, o guarda sus emociones para sí mismo/a?</p>
+      <div class="opciones">
+        <label><input type="radio" name="q14" value="0"> Habla con facilidad sobre sus emociones</label>
+        <label><input type="radio" name="q14" value="1"> A veces lo expresa, a veces no</label>
+        <label><input type="radio" name="q14" value="2"> Raramente habla de sus emociones, las guarda muy para sí</label>
+        <label><input type="radio" name="q14" value="3"> Nunca habla de cómo se siente, hay silencio total al respecto</label>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:28px;">
+      <button
+        onclick="calcular()"
+        style="background:#00509e; color:white; border:none; border-radius:50px;
+               padding:15px 50px; font-size:1.1em; font-weight:700;
+               cursor:pointer; font-family:'Poppins',sans-serif;
+               box-shadow:0 4px 12px rgba(0,80,158,.3);">
+        Ver mi Resultado →
+      </button>
+    </div>
+
+  </div><!-- fin form-enc -->
+
+  <!-- RESULTADO -->
+  <div id="resultado"></div>
+
+</div>
+</section>
+
+<!-- CIFRAS REALES — INEGI 2024 / OMS -->
+<section style="background:#003366;color:white;padding:45px 20px;text-align:center;">
+  <div class="container">
+    <h2 style="color:white;margin-bottom:6px;font-size:1.5em;">¿Por qué es importante esta evaluación?</h2>
+    <p style="opacity:0.75;font-size:0.85em;margin-bottom:28px;">
+      Fuentes: INEGI — Estadísticas de Defunciones Registradas 2024 (cifras preliminares) &amp; OMS 2024
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">
+      <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:18px 24px;min-width:160px;max-width:200px;">
+        <div style="font-size:2em;font-weight:700;color:#f1c40f;">8,856</div>
+        <p style="margin:6px 0 0;font-size:0.85em;">suicidios registrados<br>en México en 2024</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:18px 24px;min-width:160px;max-width:200px;">
+        <div style="font-size:2em;font-weight:700;color:#f1c40f;">52%</div>
+        <p style="margin:6px 0 0;font-size:0.85em;">ocurren en jóvenes<br>de 15 a 29 años</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:18px 24px;min-width:160px;max-width:200px;">
+        <div style="font-size:2em;font-weight:700;color:#f1c40f;">x20</div>
+        <p style="margin:6px 0 0;font-size:0.85em;">intentos por cada<br>muerte (OMS)</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:18px 24px;min-width:160px;max-width:200px;">
+        <div style="font-size:2em;font-weight:700;color:#f1c40f;">16.2</div>
+        <p style="margin:6px 0 0;font-size:0.85em;">tasa de Yucatán<br>por 100,000 hab.</p>
+      </div>
+    </div>
+    <p style="margin-top:20px;font-size:0.85em;opacity:0.7;">
+      El suicidio es <strong>prevenible</strong>. Detectar señales a tiempo y buscar apoyo marca la diferencia. — OMS, <em>Vivir la vida</em> 2021
+    </p>
+  </div>
+</section>
+
+<!-- BANNER EMERGENCIA -->
+<div id="banner-sos">
+  <span>🆘 ¿Necesitas ayuda ahora?</span>
+  <a href="tel:8009112000">📞 800-911-2000</a>
+  <a href="tel:5552598121">📞 SAPTEL</a>
+  <a href="tel:911">🚨 911</a>
+  <button onclick="document.getElementById('banner-sos').style.display='none'">✕</button>
+</div>
+
+<footer style="background:#001a3a; color:white; padding:20px 0; text-align:center;">
+  <p>&copy; 2025 PsicoApoyo – TacoCoders | ITESCAM</p>
+  <p style="font-size:0.82em; opacity:0.7;">Este sitio no reemplaza atención profesional. Emergencias: 911</p>
+</footer>
+
+<script>
+// =========================================================
+// DATOS POR PERSPECTIVA Y NIVEL
+// =========================================================
+var PERSP = 'personal';
+
+var DATOS = {
+  personal: {
+    verde: {
+      titulo: '🟢 Riesgo Bajo — Estás Bien',
+      desc: 'Las respuestas indican que tu estado emocional es estable en este momento. No se detectan señales de alarma inmediatas.',
+      tituloRec: 'Recomendaciones para mantener tu bienestar:',
+      recs: [
+        ['🧘','Mantén rutinas saludables: sueño regular, alimentación balanceada y actividad física.'],
+        ['💬','Habla con personas de confianza cuando sientas que algo te pesa.'],
+        ['📱','Si en algún momento sientes que tu estado emocional cambia, vuelve a evaluar o busca orientación.'],
+        ['🌱','Practica actividades que te den bienestar: ejercicio, hobbies, tiempo en naturaleza.'],
+        ['📚','Considera aprender sobre inteligencia emocional y manejo del estrés.']
+      ],
+      btns: [
+        {t:'Ver recursos de bienestar', h:'recursos.html', cls:'azul'},
+        {t:'Inicio', h:'index.html', cls:'gris'}
+      ]
+    },
+    amarillo: {
+      titulo: '🟡 Riesgo Medio — Atención Recomendada',
+      desc: 'Hay señales que merecen atención. No estás en crisis inmediata, pero es importante que busques apoyo antes de que la situación avance.',
+      tituloRec: 'Pasos recomendados:',
+      recs: [
+        ['💙','Habla con alguien de confianza sobre cómo te sientes. No cargues esto solo/a.'],
+        ['🩺','Busca orientación con un psicólogo o médico. Pedir ayuda es un acto de fortaleza.'],
+        ['📞','Si en algún momento sientes que el malestar se intensifica, llama a la Línea de la Vida: 800-911-2000 (gratuita, 24/7).'],
+        ['🚫','Evita el alcohol u otras sustancias para manejar tus emociones; puede empeorar el estado de ánimo.'],
+        ['📓','Considera escribir cómo te sientes para identificar los momentos más difíciles.']
+      ],
+      btns: [
+        {t:'Contactar especialista', h:'contacto.html', cls:'azul'},
+        {t:'📞 800-911-2000', h:'tel:8009112000', cls:'rojo'}
+      ]
+    },
+    rojo: {
+      titulo: '🔴 Riesgo Alto — Busca Ayuda Ahora',
+      desc: 'Las respuestas indican señales serias de riesgo emocional. Es fundamental que recibas apoyo profesional de inmediato. No estás solo/a.',
+      tituloRec: 'Acciones urgentes:',
+      recs: [
+        ['🆘','Llama ahora a la Línea de la Vida: 800-911-2000 (gratuita, 24/7). Son especialistas y están para escucharte.'],
+        ['👨‍⚕️','Acude o pide que te acompañen a urgencias del hospital más cercano si sientes que estás en peligro.'],
+        ['🤝','Dile a alguien de confianza cómo te estás sintiendo. No tienes que pasar esto solo/a.'],
+        ['🚫','Aleja de tu alcance cualquier objeto con el que podrías hacerte daño.'],
+        ['📞','Si hay peligro inmediato, llama al 911.']
+      ],
+      btns: [
+        {t:'🆘 Llamar: 800-911-2000', h:'tel:8009112000', cls:'rojo'},
+        {t:'Contactar especialista', h:'contacto.html', cls:'azul'}
+      ]
+    }
+  },
+  familiar: {
+    verde: {
+      titulo: '🟢 Riesgo Bajo — Situación Estable',
+      desc: 'Las respuestas no muestran señales de alarma inmediatas en la persona que te preocupa. Sigue estando presente y pendiente.',
+      tituloRec: 'Recomendaciones como familiar:',
+      recs: [
+        ['💙','Mantén una comunicación abierta y sin juicios con tu ser querido.'],
+        ['👀','Sigue observando su comportamiento. Si algo cambia, vuelve a evaluar.'],
+        ['📚','Infórmate sobre señales de alerta para poder actuar a tiempo si es necesario.'],
+        ['🤝','Fomenta actividades compartidas que fortalezcan el vínculo emocional.'],
+        ['🌱','Recuerda que tu presencia y escucha son el mejor apoyo preventivo.']
+      ],
+      btns: [
+        {t:'Guía para familiares', h:'recursos.html', cls:'azul'},
+        {t:'Inicio', h:'index.html', cls:'gris'}
+      ]
+    },
+    amarillo: {
+      titulo: '🟡 Riesgo Medio — Actúa con Atención',
+      desc: 'Hay señales que merecen atención en la persona que te preocupa. Es el momento de actuar antes de que la situación se agrave.',
+      tituloRec: 'Pasos a seguir como familiar:',
+      recs: [
+        ['💬','Habla con la persona en un momento tranquilo y privado. Pregúntale directamente cómo se siente.'],
+        ['👂','Escucha sin juzgar ni minimizar. Tu presencia vale más que cualquier consejo.'],
+        ['🩺','Acompáñale a buscar orientación profesional. Ofrecerte a ir con ella/él hace una gran diferencia.'],
+        ['📞','Llama al 800-911-2000 si necesitas orientación sobre cómo ayudarle. Son especialistas en esto.'],
+        ['🚫','Evita prometerle guardar el secreto si percibes que puede estar en riesgo real.']
+      ],
+      btns: [
+        {t:'Guía para familiares', h:'recursos.html', cls:'azul'},
+        {t:'📞 Orientación: 800-911-2000', h:'tel:8009112000', cls:'rojo'}
+      ]
+    },
+    rojo: {
+      titulo: '🔴 Riesgo Alto — Actúa de Inmediato',
+      desc: 'Las respuestas indican riesgo alto. Tu papel como familiar es fundamental en este momento. No esperes más.',
+      tituloRec: 'Pasos urgentes como familiar:',
+      recs: [
+        ['🚫','No dejes sola a la persona. Quédate con ella o pide a alguien de confianza que se quede.'],
+        ['🔒','Retira del entorno cualquier medio de riesgo si es seguro hacerlo (medicamentos, objetos cortantes, etc.).'],
+        ['📞','Llama al 800-911-2000 ahora para recibir orientación inmediata de un especialista.'],
+        ['🏥','Acompáñale a urgencias del hospital más cercano si hay peligro inmediato.'],
+        ['🆘','Llama al 911 si crees que su vida está en peligro ahora mismo.'],
+        ['💙','Recuerda: buscar ayuda para alguien no es traicionar su confianza. Es un acto de amor.']
+      ],
+      btns: [
+        {t:'🆘 Llamar: 800-911-2000', h:'tel:8009112000', cls:'rojo'},
+        {t:'Contactar especialista', h:'contacto.html', cls:'azul'}
+      ]
+    }
+  }
+};
+
+var NIVEL_CFG = {
+  verde:    {bg:'#e8f5e9', borde:'#4caf50', color:'#2e7d32', recColor:'#1b5e20'},
+  amarillo: {bg:'#fff8e1', borde:'#ffb300', color:'#e65100', recColor:'#bf360c'},
+  rojo:     {bg:'#ffebee', borde:'#e53935', color:'#b71c1c', recColor:'#7f0000'}
+};
+
+// =========================================================
+// PERSPECTIVA
+// =========================================================
+function setPersp(tipo) {
+  PERSP = tipo;
+  var bF = document.getElementById('btn-fam');
+  var bP = document.getElementById('btn-per');
+  bF.className = 'persp-btn' + (tipo === 'familiar' ? ' activo' : '');
+  bP.className = 'persp-btn' + (tipo === 'personal' ? ' activo' : '');
+  var av = document.getElementById('aviso-persp');
+  if (tipo === 'familiar') {
+    av.style.cssText = 'display:block;background:#e8f5e9;border:2px solid #4caf50;color:#2e7d32;border-radius:8px;padding:11px 16px;font-size:0.92em;';
+    av.innerHTML = '<strong>Modo familiar / amigo/a:</strong> Responde pensando en la persona que te preocupa, no en ti.';
+  } else {
+    av.style.cssText = 'display:block;background:#e3f2fd;border:2px solid #1976d2;color:#0d47a1;border-radius:8px;padding:11px 16px;font-size:0.92em;';
+    av.innerHTML = '<strong>Modo personal:</strong> Responde pensando en cómo te sientes tú en los últimos días.';
+  }
+}
+
+// =========================================================
+// BARRA DE PROGRESO
+// =========================================================
+function actualizarProgreso() {
+  var total = 14;
+  var respondidas = 0;
+  for (var i = 1; i <= total; i++) {
+    if (document.querySelector('input[name="q' + i + '"]:checked')) respondidas++;
+  }
+  var pct = Math.round((respondidas / total) * 100);
+  document.getElementById('barra-prog-inner').style.width = pct + '%';
+  document.getElementById('barra-prog-txt').textContent = 'Pregunta ' + respondidas + ' de ' + total + ' respondidas';
+}
+
+// =========================================================
+// HIGHLIGHT + PROGRESO AL SELECCIONAR
+// =========================================================
+document.addEventListener('DOMContentLoaded', function () {
+  setPersp('personal');
+  var labels = document.querySelectorAll('.opciones label');
+  for (var i = 0; i < labels.length; i++) {
+    labels[i].addEventListener('click', function () {
+      var nm = this.querySelector('input').name;
+      var todos = document.querySelectorAll('.opciones input[name="' + nm + '"]');
+      for (var j = 0; j < todos.length; j++) todos[j].parentElement.classList.remove('ok');
+      this.classList.add('ok');
+      setTimeout(actualizarProgreso, 50);
+    });
+  }
+});
+
+// =========================================================
+// CALCULAR
+// =========================================================
+function calcular() {
+  var preguntas = ['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','q11','q12','q13','q14'];
+  // Pesos: mayor peso a preguntas críticas
+  var pesos = {q1:4, q2:3, q3:2, q4:1, q5:4, q6:2, q7:2, q8:2, q9:1, q10:1, q11:1, q12:4, q13:1, q14:1};
+
+  // Validar
+  var falta = [];
+  for (var i = 0; i < preguntas.length; i++) {
+    if (!document.querySelector('input[name="' + preguntas[i] + '"]:checked')) falta.push(preguntas[i]);
+  }
+  if (falta.length > 0) {
+    var err = document.getElementById('err-msg');
+    err.textContent = 'Faltan ' + falta.length + ' pregunta(s) por responder.';
+    err.style.display = 'block';
+    var c = document.getElementById('card-' + falta[0]);
+    if (c) { c.style.border = '2px solid #e53935'; c.scrollIntoView({behavior:'smooth', block:'center'}); }
+    setTimeout(function(){ document.getElementById('err-msg').style.display = 'none'; }, 5000);
+    return;
+  }
+
+  // Puntaje
+  var total = 0, maxP = 0;
+  for (var k = 0; k < preguntas.length; k++) {
+    var q = preguntas[k];
+    var v = parseInt(document.querySelector('input[name="' + q + '"]:checked').value, 10);
+    total += v * pesos[q];
+    maxP  += 3 * pesos[q];
+  }
+
+  // Preguntas críticas: q1 (pensamientos), q2 (expresión), q5 (plan/medios), q12 (intentos previos)
+  var q1v  = parseInt(document.querySelector('input[name="q1"]:checked').value,  10);
+  var q2v  = parseInt(document.querySelector('input[name="q2"]:checked').value,  10);
+  var q5v  = parseInt(document.querySelector('input[name="q5"]:checked').value,  10);
+  var q12v = parseInt(document.querySelector('input[name="q12"]:checked').value, 10);
+  var critico = (q1v >= 2 || q2v >= 2 || q5v >= 2 || q12v >= 2);
+
+  var pct = total / maxP;
+  var nivel = (critico || pct >= 0.55) ? 'rojo' : (pct >= 0.28) ? 'amarillo' : 'verde';
+
+  // Guardar resultado para contacto.html y psicologo.html
+  var resultadoEnc = { nivel: nivel, perspectiva: PERSP, pct: Math.round(pct * 100), fecha: Date.now() };
+  try {
+    sessionStorage.setItem('psicoapoyo_result', JSON.stringify(resultadoEnc));
+    localStorage.setItem('psicoapoyo_ultimo_resultado', JSON.stringify(resultadoEnc));
+  } catch(e) {}
+
+  document.getElementById('form-enc').style.display = 'none';
+  document.getElementById('barra-prog-wrap').style.display = 'none';
+  mostrar(nivel, PERSP);
+}
+
+// =========================================================
+// MOSTRAR RESULTADO
+// =========================================================
+function mostrar(nivel, persp) {
+  if (!persp) persp = 'personal';
+  var cfg  = NIVEL_CFG[nivel];
+  var dato = DATOS[persp][nivel];
+  var res  = document.getElementById('resultado');
+
+  res.style.display      = 'block';
+  res.style.background   = cfg.bg;
+  res.style.border       = '3px solid ' + cfg.borde;
+  res.style.borderRadius = '16px';
+  res.style.padding      = '35px 25px';
+  res.style.maxWidth     = '700px';
+  res.style.margin       = '40px auto 20px';
+  res.style.textAlign    = 'center';
+
+  while (res.firstChild) res.removeChild(res.firstChild);
+
+  // Badge perspectiva
+  var badge = document.createElement('div');
+  badge.className = 'badge';
+  badge.style.cssText = (persp === 'familiar')
+    ? 'background:#e8f5e9;color:#2e7d32;border:1px solid #4caf50;'
+    : 'background:#e3f2fd;color:#0d47a1;border:1px solid #1976d2;';
+  badge.textContent = (persp === 'familiar') ? 'Resultado para Familiar / Amigo/a' : 'Resultado Personal';
+  res.appendChild(badge);
+
+  // Semáforo
+  var luces = [
+    {id:'rojo',     onColor:'#e53935', offColor:'#ffcdd2', lbl:'ALTO'},
+    {id:'amarillo', onColor:'#ffb300', offColor:'#fff9c4', lbl:'MEDIO'},
+    {id:'verde',    onColor:'#4caf50', offColor:'#c8e6c9', lbl:'BAJO'}
+  ];
+  var sema = document.createElement('div');
+  sema.className = 'sema';
+  for (var s = 0; s < luces.length; s++) {
+    var enc = (luces[s].id === nivel);
+    var fila = document.createElement('div');
+    fila.className = 'sema-fila';
+    var circ = document.createElement('div');
+    circ.className = 'sema-circulo';
+    circ.style.background = enc ? luces[s].onColor : luces[s].offColor;
+    if (enc) circ.style.boxShadow = '0 0 18px 5px ' + luces[s].onColor;
+    var lbl = document.createElement('span');
+    lbl.className = 'sema-txt';
+    lbl.textContent = luces[s].lbl;
+    lbl.style.color = enc ? luces[s].onColor : '#666';
+    fila.appendChild(circ);
+    fila.appendChild(lbl);
+    sema.appendChild(fila);
+  }
+  res.appendChild(sema);
+
+  // Título
+  var h2 = document.createElement('h2');
+  h2.className = 'res-titulo';
+  h2.style.color = cfg.color;
+  h2.textContent = dato.titulo;
+  res.appendChild(h2);
+
+  // Descripción
+  var desc = document.createElement('p');
+  desc.className = 'res-desc';
+  desc.textContent = dato.desc;
+  res.appendChild(desc);
+
+  // Recomendaciones
+  var caja = document.createElement('div');
+  caja.className = 'recs-caja';
+  caja.style.border = '1px solid ' + cfg.borde;
+  var h3 = document.createElement('h3');
+  h3.style.color = cfg.recColor;
+  h3.textContent = dato.tituloRec;
+  caja.appendChild(h3);
+  for (var r = 0; r < dato.recs.length; r++) {
+    var filaR = document.createElement('div');
+    filaR.className = 'rec-fila';
+    var ico = document.createElement('span');
+    ico.className = 'ico';
+    ico.textContent = dato.recs[r][0];
+    var txt = document.createElement('span');
+    txt.textContent = dato.recs[r][1];
+    filaR.appendChild(ico);
+    filaR.appendChild(txt);
+    caja.appendChild(filaR);
+  }
+  res.appendChild(caja);
+
+  // Botones
+  var btnsDiv = document.createElement('div');
+  btnsDiv.className = 'res-btns';
+  for (var b = 0; b < dato.btns.length; b++) {
+    var a = document.createElement('a');
+    a.textContent = dato.btns[b].t;
+    a.href        = dato.btns[b].h;
+    a.className   = dato.btns[b].cls;
+    btnsDiv.appendChild(a);
+  }
+  res.appendChild(btnsDiv);
+
+  // Nota legal
+  var nota = document.createElement('p');
+  nota.className = 'nota-legal';
+  nota.textContent = 'Esta evaluación no sustituye un diagnóstico clínico profesional. Consulta siempre a un especialista en salud mental.';
+  res.appendChild(nota);
+
+  // Botón volver
+  var bv = document.createElement('button');
+  bv.className = 'btn-volver';
+  bv.textContent = '↩ Volver a evaluar';
+  bv.onclick = reiniciar;
+  res.appendChild(bv);
+
+  res.scrollIntoView({behavior:'smooth', block:'start'});
+
+  if (nivel === 'rojo') {
+    document.getElementById('banner-sos').style.display = 'flex';
+  }
+}
+
+// =========================================================
+// REINICIAR
+// =========================================================
+function reiniciar() {
+  PERSP = 'personal';
+  var res = document.getElementById('resultado');
+  res.style.display = 'none';
+  while (res.firstChild) res.removeChild(res.firstChild);
+
+  var form = document.getElementById('form-enc');
+  form.style.display = 'block';
+
+  document.getElementById('barra-prog-wrap').style.display = 'block';
+
+  var radios = form.querySelectorAll('input[type=radio]');
+  for (var i = 0; i < radios.length; i++) radios[i].checked = false;
+
+  var cards = form.querySelectorAll('.pregunta-card');
+  for (var i = 0; i < cards.length; i++) cards[i].style.border = '';
+
+  var labels = form.querySelectorAll('label');
+  for (var i = 0; i < labels.length; i++) labels[i].classList.remove('ok');
+
+  setPersp('personal');
+  actualizarProgreso();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+
+<script src="app.js"></script>
+</body>
+</html>

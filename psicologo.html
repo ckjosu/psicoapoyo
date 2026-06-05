@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal del Psicólogo — PsicoApoyo</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family:'Poppins',sans-serif; background:#f0f4f8; }
+.wrap { max-width:1100px; margin:0 auto; padding:20px; }
+
+/* LOGIN */
+#pantalla-login { display:flex; align-items:center; justify-content:center; min-height:80vh; }
+.login-card { background:white; border-radius:16px; padding:40px 36px; box-shadow:0 4px 20px rgba(0,0,0,0.12); width:100%; max-width:400px; text-align:center; }
+.login-card h2 { color:#003366; margin:0 0 6px; }
+.login-card p  { color:#666; font-size:.92em; margin:0 0 24px; }
+.inp { width:100%; padding:12px 14px; margin-bottom:12px; border:2px solid #e0e0e0; border-radius:8px; font-size:.97em; font-family:'Poppins',sans-serif; box-sizing:border-box; }
+.inp:focus { outline:none; border-color:#003366; }
+.btn-login { width:100%; padding:13px; background:#003366; color:white; border:none; border-radius:8px; font-size:1em; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; }
+.btn-login:hover { background:#00509e; }
+.login-err { color:#c62828; font-size:.88em; margin-top:8px; display:none; }
+
+/* DASHBOARD */
+#pantalla-dashboard { display:none; }
+.topbar { background:#003366; color:white; padding:16px 24px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:10px; }
+.topbar h2 { margin:0; font-size:1.1em; }
+.topbar span { font-size:.85em; opacity:.8; }
+.btn-salir { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.4); color:white; padding:7px 18px; border-radius:20px; cursor:pointer; font-size:.85em; font-family:'Poppins',sans-serif; }
+
+/* STATS */
+.stats { display:flex; flex-wrap:wrap; gap:14px; margin-bottom:24px; }
+.stat { background:white; border-radius:12px; padding:18px 22px; flex:1; min-width:130px; box-shadow:0 2px 8px rgba(0,0,0,.07); text-align:center; }
+.stat-n { font-size:2em; font-weight:700; color:#003366; }
+.stat-l { font-size:.8em; color:#666; margin-top:3px; }
+
+/* TARJETAS */
+.card { background:white; border-radius:12px; padding:22px; box-shadow:0 2px 8px rgba(0,0,0,.07); margin-bottom:20px; }
+.card h3 { color:#003366; margin:0 0 16px; font-size:1.05em; border-bottom:2px solid #eaf4ff; padding-bottom:10px; }
+
+/* FILTROS */
+.filtros { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.fbtn { padding:6px 16px; border:2px solid #003366; border-radius:20px; background:white; color:#003366; cursor:pointer; font-family:'Poppins',sans-serif; font-size:.85em; font-weight:600; }
+.fbtn.on { background:#003366; color:white; }
+
+/* SOLICITUDES */
+.sol { border:1px solid #e0e0e0; border-radius:10px; padding:14px 16px; margin-bottom:10px; cursor:pointer; transition:all .2s; }
+.sol:hover { border-color:#003366; background:#f8fbff; }
+.sol.rojo     { border-left:5px solid #e53935; }
+.sol.amarillo { border-left:5px solid #ffb300; }
+.sol.verde    { border-left:5px solid #4caf50; }
+.sol-header { display:flex; justify-content:space-between; align-items:center; }
+.sol-nombre { font-weight:700; font-size:.97em; color:#003366; }
+.sol-fecha  { font-size:.78em; color:#999; }
+.badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:.75em; font-weight:700; margin:5px 0 3px; }
+.badge.rojo     { background:#ffebee; color:#c62828; }
+.badge.amarillo { background:#fff8e1; color:#e65100; }
+.badge.verde    { background:#e8f5e9; color:#2e7d32; }
+.badge.nuevo    { background:#e53935; color:white; }
+.sol-msg { font-size:.85em; color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* MODAL */
+#modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:999; align-items:center; justify-content:center; padding:20px; }
+.modal-box { background:white; border-radius:16px; padding:28px; max-width:560px; width:100%; max-height:88vh; overflow-y:auto; }
+.modal-box h3 { color:#003366; margin:0 0 16px; }
+.mfield { margin-bottom:13px; }
+.mlabel { font-size:.78em; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.5px; }
+.mval   { font-size:.95em; color:#222; margin-top:3px; }
+.nota-area { width:100%; padding:10px 12px; border:2px solid #e0e0e0; border-radius:8px; font-family:'Poppins',sans-serif; font-size:.93em; resize:vertical; min-height:80px; box-sizing:border-box; }
+.nota-area:focus { outline:none; border-color:#003366; }
+.modal-btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+.btn-ok  { background:#003366; color:white; border:none; border-radius:8px; padding:10px 20px; cursor:pointer; font-family:'Poppins',sans-serif; font-weight:600; }
+.btn-del { background:#ef5350; color:white; border:none; border-radius:8px; padding:10px 20px; cursor:pointer; font-family:'Poppins',sans-serif; }
+.btn-cls { background:#e0e0e0; color:#333; border:none; border-radius:8px; padding:10px 20px; cursor:pointer; font-family:'Poppins',sans-serif; }
+
+/* PERFIL */
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:600px){ .grid2 { grid-template-columns:1fr; } }
+
+/* TOAST */
+.toast { position:fixed; bottom:24px; right:24px; background:#2e7d32; color:white; padding:12px 22px; border-radius:10px; font-size:.93em; display:none; z-index:9999; font-family:'Poppins',sans-serif; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+
+/* LOADING */
+.loading { text-align:center; color:#aaa; padding:30px; }
+</style>
+</head>
+<body>
+
+<nav class="navbar fixed">
+  <ul>
+    <li><a href="index.html">Inicio</a></li>
+    <li><a href="encuesta.html">Evaluar Estado Emocional</a></li>
+    <li><a href="recursos.html">Recursos de Apoyo</a></li>
+    <li><a href="contacto.html">Contacto</a></li>
+    <li><a href="psicologo.html" style="opacity:.8;font-size:.9em;">🩺 Psicólogos</a></li>
+  </ul>
+</nav>
+
+<div style="padding-top:80px;">
+<div class="wrap">
+
+<!-- LOGIN -->
+<div id="pantalla-login">
+  <div class="login-card">
+    <div style="font-size:3em;margin-bottom:10px;" id="login-icon">🔐</div>
+    <h2 id="login-titulo">Acceso al Portal</h2>
+    <p id="login-desc">Selecciona tu tipo de acceso</p>
+
+    <!-- Selector de rol -->
+    <div id="selector-rol" style="display:flex;gap:10px;margin-bottom:18px;">
+      <button onclick="setRol('psicologo')" id="btn-rol-psi"
+        style="flex:1;padding:12px;border:2px solid #003366;border-radius:10px;background:white;color:#003366;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;font-size:.9em;">
+        🩺 Psicólogo
+      </button>
+      <button onclick="setRol('admin')" id="btn-rol-adm"
+        style="flex:1;padding:12px;border:2px solid #4a148c;border-radius:10px;background:white;color:#4a148c;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;font-size:.9em;">
+        ⚙️ Admin
+      </button>
+    </div>
+
+    <input class="inp" type="text"     id="l-user" placeholder="Usuario">
+    <input class="inp" type="password" id="l-pass" placeholder="Contraseña"
+           onkeypress="if(event.key==='Enter')login()">
+    <button class="btn-login" id="btn-login-submit" onclick="login()">Entrar</button>
+    <div class="login-err" id="l-err">Usuario o contraseña incorrectos.</div>
+    <p style="font-size:.78em;color:#aaa;margin-top:18px;" id="login-hint">
+      Ingresa tus credenciales para acceder al portal.
+    </p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="pantalla-dashboard">
+
+  <div class="topbar">
+    <div>
+      <h2 id="saludo">👋 Bienvenida/o</h2>
+      <span id="fecha-hoy"></span>
+    </div>
+    <button class="btn-salir" onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="st-total">—</div><div class="stat-l">Total solicitudes</div></div>
+    <div class="stat" style="border-top:4px solid #e53935"><div class="stat-n" id="st-rojo"  style="color:#c62828">—</div><div class="stat-l">🔴 Riesgo alto</div></div>
+    <div class="stat" style="border-top:4px solid #ffb300"><div class="stat-n" id="st-amar"  style="color:#e65100">—</div><div class="stat-l">🟡 Riesgo medio</div></div>
+    <div class="stat" style="border-top:4px solid #4caf50"><div class="stat-n" id="st-verde" style="color:#2e7d32">—</div><div class="stat-l">🟢 Riesgo bajo</div></div>
+    <div class="stat" style="border-top:4px solid #1976d2"><div class="stat-n" id="st-nuevo" style="color:#1565c0">—</div><div class="stat-l">Sin atender</div></div>
+  </div>
+
+  <!-- Solicitudes -->
+  <div class="card">
+    <h3>📩 Solicitudes de Contacto</h3>
+    <div class="filtros">
+      <button class="fbtn on" id="f-todas"    onclick="filtrar('todas')">Todas</button>
+      <button class="fbtn"    id="f-rojo"     onclick="filtrar('rojo')"     style="border-color:#e53935;color:#c62828;">🔴 Alto</button>
+      <button class="fbtn"    id="f-amarillo" onclick="filtrar('amarillo')" style="border-color:#ffb300;color:#e65100;">🟡 Medio</button>
+      <button class="fbtn"    id="f-verde"    onclick="filtrar('verde')"    style="border-color:#4caf50;color:#2e7d32;">🟢 Bajo</button>
+      <button class="fbtn"    id="f-nueva"    onclick="filtrar('nueva')">Sin atender</button>
+    </div>
+    <div id="lista"></div>
+  </div>
+
+  <!-- Tab Chat -->
+  <div class="card" id="panel-chat">
+    <h3>💬 Chat con Usuarios <span id="badge-chat" style="display:none;background:#e53935;color:white;border-radius:12px;padding:2px 10px;font-size:.75em;margin-left:8px;">Nuevo</span></h3>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;" id="lista-sesiones-chat">
+      <p style="color:#aaa;font-size:.9em;">Cargando chats activos...</p>
+    </div>
+    <div id="chat-psi-activo" style="display:none;">
+      <div id="chat-psi-msgs" style="height:260px;overflow-y:auto;background:#f9f9f9;border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid #eee;"></div>
+      <div style="display:flex;gap:8px;">
+        <input id="chat-psi-input" class="inp" placeholder="Escribe tu respuesta..." style="flex:1;margin:0;"
+               onkeypress="if(event.key==='Enter') responderChat()">
+        <button class="btn-ok" onclick="responderChat()">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Perfil + Notas -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div class="card">
+      <h3>👤 Mi Perfil</h3>
+      <div class="grid2">
+        <input class="inp" id="p-nombre"  placeholder="Nombre completo">
+        <input class="inp" id="p-cedula"  placeholder="Cédula profesional">
+        <input class="inp" id="p-esp"     placeholder="Especialidad">
+        <input class="inp" id="p-tel"     placeholder="Teléfono">
+      </div>
+      <input class="inp" id="p-correo"    placeholder="Correo profesional" style="margin-top:0">
+      <input class="inp" id="p-whatsapp" placeholder="WhatsApp (ej: 529991234567)" style="margin-top:0">
+      <input class="inp" id="p-calendly" placeholder="Link de Calendly para videollamadas" style="margin-top:0">
+      <textarea class="inp" id="p-bio" rows="3" placeholder="Descripción breve" style="resize:vertical;"></textarea>
+      <select class="inp" id="p-disp" style="margin-top:0">
+        <option value="disponible">✅ Disponible</option>
+        <option value="limitado">⚠️ Disponibilidad limitada</option>
+        <option value="no">❌ No disponible</option>
+      </select>
+      <button class="btn-ok" onclick="guardarPerfil()">💾 Guardar perfil</button>
+    </div>
+    <div class="card">
+      <h3>📝 Notas Privadas</h3>
+      <p style="font-size:.85em;color:#666;margin-bottom:10px;">Solo tú puedes verlas.</p>
+      <textarea class="inp" id="notas" rows="8" placeholder="Escribe tus anotaciones..." style="resize:vertical;width:100%;box-sizing:border-box;"></textarea>
+      <button class="btn-ok" onclick="guardarNotas()" style="margin-top:8px;">💾 Guardar</button>
+    </div>
+  </div>
+
+</div><!-- fin dashboard -->
+
+<!-- PANEL ADMIN -->
+<div id="pantalla-admin" style="display:none;">
+  <div class="topbar" style="background:#4a148c;">
+    <div>
+      <h2>⚙️ Panel Administrador</h2>
+      <span id="adm-fecha"></span>
+    </div>
+    <button class="btn-salir" onclick="logout()">Cerrar sesión</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="adm-stat-total">—</div><div class="stat-l">Total solicitudes</div></div>
+    <div class="stat" style="border-top:4px solid #e53935"><div class="stat-n" id="adm-stat-rojo" style="color:#c62828">—</div><div class="stat-l">🔴 Alto</div></div>
+    <div class="stat" style="border-top:4px solid #ffb300"><div class="stat-n" id="adm-stat-amarillo" style="color:#e65100">—</div><div class="stat-l">🟡 Medio</div></div>
+    <div class="stat" style="border-top:4px solid #1976d2"><div class="stat-n" id="adm-stat-sin-leer" style="color:#1565c0">—</div><div class="stat-l">Sin atender</div></div>
+    <div class="stat" style="border-top:4px solid #4a148c"><div class="stat-n" id="adm-stat-psicologos" style="color:#4a148c">—</div><div class="stat-l">Psicólogos</div></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+    <button class="fbtn on" id="tab-sols" onclick="admTab('sols')" style="border-color:#4a148c;color:#4a148c;">📩 Solicitudes</button>
+    <button class="fbtn"    id="tab-psis" onclick="admTab('psis')" style="border-color:#4a148c;color:#4a148c;">🩺 Psicólogos</button>
+  </div>
+  <div id="adm-tab-sols" class="card">
+    <h3>📩 Todas las Solicitudes</h3>
+    <div id="adm-lista"></div>
+  </div>
+  <div id="adm-tab-psis" class="card" style="display:none;">
+    <h3>🩺 Psicólogos Registrados</h3>
+    <div id="adm-tabla-psis"></div>
+    <hr style="margin:20px 0;">
+    <h3>➕ Registrar nuevo psicólogo</h3>
+    <div class="grid2">
+      <input class="inp" id="np-nombre" placeholder="Nombre completo *">
+      <input class="inp" id="np-user"   placeholder="Usuario *">
+      <input class="inp" id="np-pass"   placeholder="Contraseña *" type="password">
+      <input class="inp" id="np-cedula" placeholder="Cédula profesional">
+      <input class="inp" id="np-esp"    placeholder="Especialidad">
+      <input class="inp" id="np-correo" placeholder="Correo">
+    </div>
+    <button class="btn-ok" onclick="registrarPsicologo()">💾 Registrar psicólogo</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- MODAL SOLICITUD -->
+<div id="modal" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal-box">
+    <h3>📋 Detalle de Solicitud</h3>
+    <div id="modal-cuerpo"></div>
+    <div class="modal-btns">
+      <button class="btn-ok"  onclick="marcarLeida()">✅ Marcar leída</button>
+      <button class="btn-del" onclick="archivar()">🗑 Archivar</button>
+      <button class="btn-cls" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var API = 'api.php';
+var sesion = null;
+var cache  = [];
+var filtroActual = 'todas';
+var idxActual    = null;
+var rolActual    = 'psicologo';
+
+// ============================================================
+// SELECTOR DE ROL
+// ============================================================
+function setRol(rol) {
+  rolActual = rol;
+  var btnPsi = document.getElementById('btn-rol-psi');
+  var btnAdm = document.getElementById('btn-rol-adm');
+  if (rol === 'psicologo') {
+    btnPsi.style.background = '#003366'; btnPsi.style.color = 'white';
+    btnAdm.style.background = 'white';   btnAdm.style.color = '#4a148c';
+    document.getElementById('login-icon').textContent  = '🩺';
+    document.getElementById('login-titulo').textContent = 'Portal del Psicólogo';
+    document.getElementById('login-desc').textContent   = 'Accede para ver solicitudes y gestionar tu perfil.';
+    document.getElementById('btn-login-submit').style.background = '#003366';
+  } else {
+    btnAdm.style.background = '#4a148c'; btnAdm.style.color = 'white';
+    btnPsi.style.background = 'white';   btnPsi.style.color = '#003366';
+    document.getElementById('login-icon').textContent  = '⚙️';
+    document.getElementById('login-titulo').textContent = 'Panel Administrador';
+    document.getElementById('login-desc').textContent   = 'Acceso exclusivo para administradores.';
+    document.getElementById('btn-login-submit').style.background = '#4a148c';
+  }
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+function login() {
+  var u = document.getElementById('l-user').value.trim();
+  var p = document.getElementById('l-pass').value.trim();
+  if (!u || !p) return;
+  document.getElementById('l-err').style.display = 'none';
+
+  fetch(API, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({accion:'login', usuario:u, pass:p, tipo:rolActual})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    if (res.ok) {
+      sesion = res;
+      if (rolActual === 'admin') abrirAdmin();
+      else abrirDashboard();
+    } else {
+      document.getElementById('l-err').style.display = 'block';
+    }
+  })
+  .catch(function() {
+    // Sin conexión al servidor
+    document.getElementById('l-err').textContent = 'Error de conexión. Verifica que el servidor esté activo.';
+    document.getElementById('l-err').style.display = 'block';
+  });
+}
+
+function logout() {
+  sesion = null; cache = [];
+  document.getElementById('pantalla-dashboard').style.display = 'none';
+  document.getElementById('pantalla-admin').style.display     = 'none';
+  document.getElementById('pantalla-login').style.display     = 'flex';
+  document.getElementById('l-pass').value = '';
+  setRol('psicologo');
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function abrirDashboard() {
+  document.getElementById('pantalla-login').style.display    = 'none';
+  document.getElementById('pantalla-dashboard').style.display = 'block';
+  document.getElementById('saludo').textContent = '👋 Bienvenida/o, ' + (sesion.nombre || '');
+  document.getElementById('fecha-hoy').textContent = new Date().toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  cargarPerfil();
+  cargarNotas();
+  cargarSolicitudes();
+  cargarSesionesChatPsi();
+  window.abrirChatPsi    = abrirChatPsi;
+  window.responderChat   = responderChat;
+  // Actualizar cada 20 segundos
+  setInterval(cargarSolicitudes, 20000);
+}
+
+// ============================================================
+// SOLICITUDES — leer de api.php
+// ============================================================
+function cargarSolicitudes() {
+  document.getElementById('lista').innerHTML = '<div class="loading">⏳ Cargando...</div>';
+
+  fetch(API + '?accion=solicitudes')
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    if (res.ok) {
+      cache = res.datos || [];
+      renderLista();
+      renderStats();
+    }
+  })
+  .catch(function() {
+    // Fallback localStorage si no hay API
+    try { cache = JSON.parse(localStorage.getItem('psicoapoyo_solicitudes') || '[]'); }
+    catch(e) { cache = []; }
+    renderLista();
+    renderStats();
+  });
+}
+
+function renderStats() {
+  var total = cache.length;
+  var rojas = cache.filter(function(s){ return s.nivel_riesgo==='rojo'||s.nivel==='rojo'; }).length;
+  var amar  = cache.filter(function(s){ return s.nivel_riesgo==='amarillo'||s.nivel==='amarillo'; }).length;
+  var verd  = cache.filter(function(s){ return s.nivel_riesgo==='verde'||s.nivel==='verde'; }).length;
+  var nuev  = cache.filter(function(s){ return s.estado==='nueva'||!s.leido; }).length;
+  document.getElementById('st-total').textContent = total;
+  document.getElementById('st-rojo').textContent  = rojas;
+  document.getElementById('st-amar').textContent  = amar;
+  document.getElementById('st-verde').textContent = verd;
+  document.getElementById('st-nuevo').textContent = nuev;
+}
+
+function filtrar(f) {
+  filtroActual = f;
+  document.querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('on'); });
+  document.getElementById('f-' + f).classList.add('on');
+  renderLista();
+}
+
+function renderLista() {
+  var lista = cache.filter(function(s) {
+    var niv   = s.nivel_riesgo || s.nivel || 'verde';
+    var est   = s.estado || (s.leido ? 'leida' : 'nueva');
+    if (filtroActual === 'rojo')     return niv === 'rojo';
+    if (filtroActual === 'amarillo') return niv === 'amarillo';
+    if (filtroActual === 'verde')    return niv === 'verde';
+    if (filtroActual === 'nueva')    return est === 'nueva';
+    return true;
+  });
+
+  var cont = document.getElementById('lista');
+  if (!lista.length) {
+    cont.innerHTML = '<p style="text-align:center;color:#aaa;padding:24px;">Sin solicitudes en esta categoría.</p>';
+    return;
+  }
+
+  // Ordenar: rojo primero
+  var ord = {rojo:0, amarillo:1, verde:2};
+  lista.sort(function(a,b){
+    var na = a.nivel_riesgo||a.nivel||'verde', nb = b.nivel_riesgo||b.nivel||'verde';
+    return (ord[na]||2) - (ord[nb]||2);
+  });
+
+  cont.innerHTML = '';
+  lista.forEach(function(s, i) {
+    var niv   = s.nivel_riesgo || s.nivel || 'verde';
+    var est   = s.estado || (s.leido ? 'leida' : 'nueva');
+    var esNueva = est === 'nueva';
+    var fecha = s.fecha_envio
+      ? new Date(s.fecha_envio).toLocaleDateString('es-MX',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
+      : '';
+    var nivelLabel = {rojo:'🔴 Riesgo Alto', amarillo:'🟡 Riesgo Medio', verde:'🟢 Riesgo Bajo'}[niv] || niv;
+    var realIdx = cache.indexOf(s);
+
+    var div = document.createElement('div');
+    div.className = 'sol ' + niv;
+    div.innerHTML =
+      '<div class="sol-header">' +
+        '<span class="sol-nombre">' + (s.nombre_solicitante||s.nombre||'Anónimo') +
+          (esNueva ? ' <span class="badge nuevo">NUEVO</span>' : '') + '</span>' +
+        '<span class="sol-fecha">' + fecha + '</span>' +
+      '</div>' +
+      '<span class="badge ' + niv + '">' + nivelLabel + '</span>' +
+      '<div class="sol-msg">' + (s.mensaje || '') + '</div>';
+    div.onclick = (function(idx){ return function(){ abrirModal(idx); }; })(realIdx);
+    cont.appendChild(div);
+  });
+}
+
+// ============================================================
+// MODAL SOLICITUD
+// ============================================================
+function abrirModal(idx) {
+  idxActual = idx;
+  var s = cache[idx];
+  var niv    = s.nivel_riesgo || s.nivel || 'verde';
+  var nivelLabel = {rojo:'🔴 Riesgo Alto', amarillo:'🟡 Riesgo Medio', verde:'🟢 Riesgo Bajo'}[niv] || niv;
+  var nivelBg    = {rojo:'#ffebee', amarillo:'#fff8e1', verde:'#e8f5e9'}[niv] || '#f5f5f5';
+  var nivelBorde = {rojo:'#e53935', amarillo:'#ffb300', verde:'#4caf50'}[niv] || '#ccc';
+  var quien = {personal:'La propia persona en crisis', familiar:'Familiar de alguien', amigo:'Amigo/a', profesional:'Profesional de salud'}[s.tipo_solicitante||s.quien] || s.tipo_solicitante||s.quien||'—';
+  var fecha = s.fecha_envio ? new Date(s.fecha_envio).toLocaleString('es-MX') : '—';
+  var pct   = s.puntaje_pct !== undefined ? s.puntaje_pct : s.pct;
+  var persp = {personal:'🧍 Personal', familiar:'👨‍👩‍👧 Familiar'}[s.perspectiva] || s.perspectiva || '—';
+
+  var bloqueEval = '';
+  if (niv || pct !== undefined) {
+    bloqueEval =
+      '<div style="background:'+nivelBg+';border:2px solid '+nivelBorde+';border-radius:10px;padding:14px;margin-bottom:14px;">' +
+        '<div style="font-size:.78em;font-weight:700;color:#777;text-transform:uppercase;margin-bottom:8px;">📋 Resultado del Cuestionario</div>' +
+        '<div style="font-weight:700;font-size:1.05em;margin-bottom:6px;">' + nivelLabel + '</div>' +
+        (pct !== undefined && pct !== null ?
+          '<div style="background:#ddd;border-radius:20px;height:8px;margin-bottom:4px;overflow:hidden;">' +
+            '<div style="background:'+nivelBorde+';width:'+pct+'%;height:100%;border-radius:20px;"></div></div>' +
+          '<div style="font-size:.8em;color:#666;">Puntaje: ' + pct + '% · Perspectiva: ' + persp + '</div>'
+        : '<div style="font-size:.8em;color:#666;">Perspectiva: ' + persp + '</div>') +
+      '</div>';
+  }
+
+  document.getElementById('modal-cuerpo').innerHTML =
+    bloqueEval +
+    mfield('Nombre', s.nombre_solicitante||s.nombre||'Anónimo') +
+    mfield('Quién solicita', quien) +
+    mfield('Contacto', s.contacto || 'No proporcionó') +
+    mfield('Medio de respuesta', s.medio_respuesta||s.medio || '—') +
+    mfield('Fecha', fecha) +
+    '<div class="mfield"><div class="mlabel">Mensaje</div>' +
+      '<div class="mval" style="white-space:pre-wrap;background:#f9f9f9;padding:12px;border-radius:8px;border:1px solid #eee;margin-top:3px;">' +
+      (s.mensaje||'') + '</div></div>' +
+    '<div class="mfield"><div class="mlabel">📝 Nota interna (solo tú la ves)</div>' +
+      '<textarea class="nota-area" id="nota-txt" placeholder="Escribe tus anotaciones sobre este caso...">' +
+      (s.nota_interna||s.respuesta||'') + '</textarea></div>';
+
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function mfield(label, val) {
+  return '<div class="mfield"><div class="mlabel">'+label+'</div><div class="mval">'+val+'</div></div>';
+}
+
+function cerrarModal() {
+  document.getElementById('modal').style.display = 'none';
+  idxActual = null;
+}
+
+function marcarLeida() {
+  if (idxActual === null) return;
+  var s    = cache[idxActual];
+  var nota = document.getElementById('nota-txt').value.trim();
+  var id   = s.id_solicitud || s.id;
+
+  fetch(API, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({accion:'marcar_leida', id_solicitud: id, nota: nota||null})
+  })
+  .then(function(){ cerrarModal(); cargarSolicitudes(); toast('✅ Solicitud marcada como leída'); })
+  .catch(function(){ cerrarModal(); toast('✅ Guardado localmente'); });
+}
+
+function archivar() {
+  if (idxActual === null) return;
+  if (!confirm('¿Archivar esta solicitud?')) return;
+  var s  = cache[idxActual];
+  var id = s.id_solicitud || s.id;
+
+  fetch(API, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({accion:'archivar', id_solicitud: id})
+  })
+  .then(function(){ cerrarModal(); cargarSolicitudes(); toast('🗑 Solicitud archivada'); })
+  .catch(function(){ cerrarModal(); toast('🗑 Archivado localmente'); });
+}
+
+// ============================================================
+// PERFIL
+// ============================================================
+function cargarPerfil() {
+  var p = sesion && sesion.perfil ? sesion.perfil : {};
+  document.getElementById('p-nombre').value  = p.nombre_completo || sesion.nombre || '';
+  document.getElementById('p-cedula').value  = p.cedula          || '';
+  document.getElementById('p-esp').value     = p.especialidad    || 'Psicología Clínica';
+  document.getElementById('p-tel').value     = p.telefono        || '';
+  document.getElementById('p-correo').value    = p.correo    || '';
+  document.getElementById('p-whatsapp').value  = p.whatsapp  || p.telefono || '';
+  document.getElementById('p-calendly').value  = p.calendly  || '';
+  document.getElementById('p-bio').value     = p.biografia       || '';
+  document.getElementById('p-disp').value    = p.disponible      || 'disponible';
+}
+
+function guardarPerfil() {
+  var datos = {
+    accion:          'guardar_perfil',
+    id_psicologo:    sesion && sesion.perfil ? sesion.perfil.id_psicologo : null,
+    nombre_completo: document.getElementById('p-nombre').value,
+    cedula:          document.getElementById('p-cedula').value,
+    especialidad:    document.getElementById('p-esp').value,
+    telefono:        document.getElementById('p-tel').value,
+    correo:          document.getElementById('p-correo').value,
+    whatsapp:        document.getElementById('p-whatsapp').value,
+    calendly:        document.getElementById('p-calendly').value,
+    biografia:       document.getElementById('p-bio').value,
+    disponible:      document.getElementById('p-disp').value
+  };
+  fetch(API, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(datos)})
+  .then(function(r){ return r.json(); })
+  .then(function(res){ toast(res.ok ? '✅ Perfil guardado en la base de datos' : '⚠️ ' + res.error); })
+  .catch(function(){ toast('✅ Perfil guardado localmente'); });
+}
+
+// ============================================================
+// NOTAS PRIVADAS (localStorage — son personales)
+// ============================================================
+function cargarNotas() {
+  var key = 'notas_psi_' + (sesion && sesion.nombre ? sesion.nombre : 'default');
+  document.getElementById('notas').value = localStorage.getItem(key) || '';
+}
+function guardarNotas() {
+  var key = 'notas_psi_' + (sesion && sesion.nombre ? sesion.nombre : 'default');
+  localStorage.setItem(key, document.getElementById('notas').value);
+  toast('✅ Notas guardadas');
+}
+
+// ============================================================
+// PANEL ADMIN
+// ============================================================
+function abrirAdmin() {
+  document.getElementById('pantalla-login').style.display = 'none';
+  document.getElementById('pantalla-admin').style.display = 'block';
+  document.getElementById('adm-fecha').textContent = new Date().toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  cargarDatosAdmin();
+}
+
+function admTab(tab) {
+  document.getElementById('adm-tab-sols').style.display = tab==='sols' ? 'block' : 'none';
+  document.getElementById('adm-tab-psis').style.display = tab==='psis' ? 'block' : 'none';
+  document.getElementById('tab-sols').classList.toggle('on', tab==='sols');
+  document.getElementById('tab-psis').classList.toggle('on', tab==='psis');
+  if (tab==='psis') cargarPsicologosAdmin();
+}
+
+function cargarDatosAdmin() {
+  fetch(API + '?accion=estadisticas')
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    if (res.ok && res.datos) {
+      document.getElementById('adm-stat-total').textContent    = res.datos.total       || 0;
+      document.getElementById('adm-stat-rojo').textContent     = res.datos.rojas       || 0;
+      document.getElementById('adm-stat-amarillo').textContent = res.datos.amarillas   || 0;
+      document.getElementById('adm-stat-sin-leer').textContent = res.datos.sin_atender || 0;
+      document.getElementById('adm-stat-psicologos').textContent = res.datos.psicologos || 0;
+    }
+  }).catch(function(){});
+
+  fetch(API + '?accion=solicitudes')
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    var lista = document.getElementById('adm-lista');
+    if (!res.ok || !res.datos || !res.datos.length) {
+      lista.innerHTML = '<p style="text-align:center;color:#aaa;padding:20px;">Sin solicitudes aún.</p>';
+      return;
+    }
+    var html = '';
+    var ord = {rojo:0,amarillo:1,verde:2};
+    res.datos.sort(function(a,b){ return (ord[a.nivel_riesgo]||2)-(ord[b.nivel_riesgo]||2); });
+    res.datos.forEach(function(s) {
+      var niv = s.nivel_riesgo || 'verde';
+      var fecha = s.fecha_envio ? new Date(s.fecha_envio).toLocaleDateString('es-MX') : '';
+      html += '<div class="sol '+niv+'" style="margin-bottom:8px;padding:12px 14px;">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;">'+
+          '<strong style="color:#003366;">'+(s.nombre_solicitante||'Anónimo')+'</strong>'+
+          '<span style="font-size:.78em;color:#999;">'+fecha+'</span>'+
+        '</div>'+
+        '<span class="badge '+niv+'">'+(niv==='rojo'?'🔴 Alto':niv==='amarillo'?'🟡 Medio':'🟢 Bajo')+'</span>'+
+        '<div style="font-size:.85em;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(s.mensaje||'')+'</div>'+
+        '<div style="font-size:.78em;color:#888;margin-top:4px;">Estado: '+(s.estado||'nueva')+' · Contacto: '+(s.contacto||'—')+'</div>'+
+      '</div>';
+    });
+    lista.innerHTML = html;
+  }).catch(function(){
+    document.getElementById('adm-lista').innerHTML = '<p style="text-align:center;color:#aaa;padding:20px;">Sin conexión al servidor.</p>';
+  });
+}
+
+function cargarPsicologosAdmin() {
+  fetch(API + '?accion=psicologos')
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    var div = document.getElementById('adm-tabla-psis');
+    document.getElementById('adm-stat-psicologos').textContent = (res.datos||[]).length;
+    if (!res.datos || !res.datos.length) {
+      div.innerHTML = '<p style="color:#aaa;">No hay psicólogos registrados aún.</p>';
+      return;
+    }
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:.9em;">';
+    html += '<tr style="background:#f0f4f8;"><th style="padding:8px;text-align:left;">Nombre</th><th>Usuario</th><th>Especialidad</th><th>Estado</th></tr>';
+    res.datos.forEach(function(p) {
+      html += '<tr style="border-bottom:1px solid #eee;">'+
+        '<td style="padding:8px;">'+p.nombre_completo+'</td>'+
+        '<td style="padding:8px;color:#666;">'+p.username+'</td>'+
+        '<td style="padding:8px;">'+( p.especialidad||'—')+'</td>'+
+        '<td style="padding:8px;"><span style="color:'+(p.disponible==='disponible'?'#2e7d32':'#e65100')+'">'+
+          (p.disponible==='disponible'?'✅ Disponible':'⚠️ '+p.disponible)+'</span></td>'+
+      '</tr>';
+    });
+    html += '</table>';
+    div.innerHTML = html;
+  }).catch(function(){
+    document.getElementById('adm-tabla-psis').innerHTML = '<p style="color:#aaa;">Sin conexión.</p>';
+  });
+}
+
+function registrarPsicologo() {
+  var datos = {
+    accion:      'nuevo_psicologo',
+    nombre:      document.getElementById('np-nombre').value.trim(),
+    username:    document.getElementById('np-user').value.trim(),
+    pass:        document.getElementById('np-pass').value.trim(),
+    cedula:      document.getElementById('np-cedula').value.trim(),
+    especialidad:document.getElementById('np-esp').value.trim(),
+    correo:      document.getElementById('np-correo').value.trim()
+  };
+  if (!datos.nombre || !datos.username || !datos.pass) {
+    toast('⚠️ Nombre, usuario y contraseña son obligatorios');
+    return;
+  }
+  fetch(API, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(datos)})
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if (res.ok) {
+      toast('✅ Psicólogo registrado correctamente');
+      ['np-nombre','np-user','np-pass','np-cedula','np-esp','np-correo'].forEach(function(id){
+        document.getElementById(id).value='';
+      });
+      cargarPsicologosAdmin();
+    } else {
+      toast('❌ Error: ' + (res.error||'inténtalo de nuevo'));
+    }
+  })
+  .catch(function(){ toast('❌ Sin conexión al servidor'); });
+}
+
+// ============================================================
+// CHAT DEL PSICÓLOGO
+// ============================================================
+var chatSesionActiva  = null;
+var chatPsiPolling    = null;
+var sesionesChatCache = [];
+
+function abrirChatPsiIdx(idx) {
+  if (sesionesChatCache[idx]) abrirChatPsi(sesionesChatCache[idx]);
+}
+
+function cargarSesionesChatPsi() {
+  fetch(API + '?accion=chat_sesiones')
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    var cont = document.getElementById('lista-sesiones-chat');
+    var badge = document.getElementById('badge-chat');
+    if (!res.ok || !res.datos || !res.datos.length) {
+      cont.innerHTML = '<p style="color:#aaa;font-size:.9em;">Sin chats activos aún.</p>';
+      return;
+    }
+    var sinLeerTotal = 0;
+    var html = '';
+    sesionesChatCache = [];
+    res.datos.forEach(function(s) {
+      sinLeerTotal += parseInt(s.sin_leer) || 0;
+      var fecha = s.ultimo_mensaje ? new Date(s.ultimo_mensaje).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'}) : '';
+      var nombre = s.sesion_id.replace(/^chat_/,'').replace(/_[a-z0-9]+$/,'').replace(/_/g,' ');
+      var idx = sesionesChatCache.length;
+      sesionesChatCache.push(s.sesion_id);
+      html += '<button onclick="abrirChatPsiIdx('+idx+')" '+
+        'style="padding:8px 14px;border:2px solid '+(s.sin_leer>0?'#e53935':'#003366')+';border-radius:8px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.85em;">'+
+        (s.sin_leer>0 ? '🔴 ' : '💬 ')+nombre+
+        (s.sin_leer>0 ? ' <strong>('+s.sin_leer+')</strong>' : '')+
+        '<br><span style="font-size:.75em;color:#999;">'+fecha+'</span>'+
+        '</button>';
+    });
+    cont.innerHTML = html;
+    if (sinLeerTotal > 0) {
+      badge.textContent = sinLeerTotal + ' nuevos';
+      badge.style.display = 'inline';
+    } else {
+      badge.style.display = 'none';
+    }
+  })
+  .catch(function(){
+    document.getElementById('lista-sesiones-chat').innerHTML = '<p style="color:#aaa;font-size:.9em;">Sin conexión.</p>';
+  });
+}
+
+function abrirChatPsi(sesionId) {
+  chatSesionActiva = sesionId;
+  document.getElementById('chat-psi-activo').style.display = 'block';
+  document.getElementById('chat-psi-msgs').innerHTML = '';
+  cargarMensajesPsi();
+  // Marcar como leído
+  fetch(API, {method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({accion:'chat_marcar_leido', sesion_id:sesionId})});
+  // Polling cada 5s
+  if (chatPsiPolling) clearInterval(chatPsiPolling);
+  chatPsiPolling = setInterval(cargarMensajesPsi, 5000);
+}
+
+function cargarMensajesPsi() {
+  if (!chatSesionActiva) return;
+  fetch(API + '?accion=chat_mensajes&sesion_id=' + chatSesionActiva)
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    var cont = document.getElementById('chat-psi-msgs');
+    if (!res.ok || !cont) return;
+    var idsActuales = [];
+    cont.querySelectorAll('[data-id]').forEach(function(el){ idsActuales.push(el.getAttribute('data-id')); });
+    (res.datos || []).forEach(function(m) {
+      if (idsActuales.indexOf(String(m.id_mensaje)) !== -1) return;
+      var esBot = m.remitente === 'psicologo';
+      var div = document.createElement('div');
+      div.setAttribute('data-id', m.id_mensaje);
+      div.textContent = m.texto;
+      div.style.cssText = 'padding:10px 14px;border-radius:12px;margin-bottom:8px;font-size:.88em;max-width:80%;' +
+        (esBot ? 'background:#003366;color:white;margin-left:auto;text-align:right;' : 'background:#e3f2fd;color:#1a237e;');
+      cont.appendChild(div);
+      cont.scrollTop = cont.scrollHeight;
+    });
+  }).catch(function(){});
+}
+
+function responderChat() {
+  var input = document.getElementById('chat-psi-input');
+  if (!input || !input.value.trim() || !chatSesionActiva) return;
+  var texto = input.value.trim();
+  input.value = '';
+
+  fetch(API, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({accion:'chat_enviar', sesion_id:chatSesionActiva, texto:texto, remitente:'psicologo'})
+  })
+  .then(function(){ cargarMensajesPsi(); cargarSesionesChatPsi(); })
+  .catch(function(){ toast('❌ Error al enviar respuesta'); });
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.display = 'none'; }, 3000);
+}
+</script>
+
+<script src="app.js"></script>
+</body>
+</html>

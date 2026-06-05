@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - PsicoApoyo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/logo.png" type="image/png">
+</head>
+<body>
+    <nav class="navbar fixed">
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="encuesta.html">Evaluar Estado Emocional</a></li>
+            <li><a href="recursos.html">Recursos de Apoyo</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+            <li><a href="psicologo.html" style="opacity:0.7;font-size:0.85em;">🩺 Psicólogos</a></li>
+        </ul>
+    </nav>
+
+    <section id="contacto" class="contact" style="background-color:#eaf4ff;padding-top:80px;">
+        <div class="container">
+            <h2 style="font-size:2em;color:#003366;margin-top:30px;">Contacto con Especialistas</h2>
+            <p style="max-width:650px;margin:0 auto 20px;">
+                Estamos aquí para ayudarte, <strong>seas familiar, amigo/a o la persona que está en crisis</strong>. Elige el medio con el que te sientas más cómodo/a. Todo es confidencial.
+            </p>
+
+            <!-- Alerta emergencia -->
+            <div style="background-color:#ffebee;border:2px solid #f44336;border-radius:10px;padding:20px;margin:20px auto 30px;max-width:620px;">
+                <h3 style="color:#c62828;margin:0 0 8px;">⚠️ ¿Hay una emergencia ahora mismo?</h3>
+                <p style="margin:0;">Si la persona está en peligro inmediato, llama al <strong><a href="tel:911" style="color:#c62828;">911</a></strong> o a la Línea de la Vida: <strong><a href="tel:800-911-2000" style="color:#c62828;">800-911-2000</a></strong>. No esperes.</p>
+            </div>
+
+            <!-- Métodos de contacto — se cargan dinámicamente desde la BD -->
+            <div id="contactos-psis">
+              <!-- Cargando psicólogos... -->
+              <div style="text-align:center;padding:30px;color:#aaa;">⏳ Cargando información de contacto...</div>
+            </div>
+
+            <!-- Chat siempre disponible -->
+            <div class="contact-method">
+                <h3>💬 Chat en línea</h3>
+                <p>Chat directo con el equipo de PsicoApoyo. Disponible para ti o para orientar a un familiar.</p>
+                <a href="#chat" class="btn btn-primary" onclick="abrirChat()">Iniciar Chat</a>
+            </div>
+
+            <!-- Formulario -->
+            <div class="contact-form" style="margin-top:40px;max-width:620px;margin-left:auto;margin-right:auto;">
+                <h3>📋 Formulario de Solicitud de Ayuda</h3>
+                <p style="font-size:0.9em;color:#555;margin-bottom:15px;">Puedes enviarlo por ti mismo o en nombre de un familiar. Un especialista se pondrá en contacto contigo.</p>
+
+                <!-- Aviso dinámico según nivel de encuesta -->
+                <div id="aviso-nivel" style="display:none;"></div>
+
+                <div>
+                    <!-- Quién contacta -->
+                    <label style="display:block;text-align:left;font-weight:600;margin-bottom:4px;font-size:0.95em;">¿Quién realiza esta solicitud?</label>
+                    <select id="sel-quien" style="width:100%;padding:10px;margin:0 0 10px;border-radius:5px;border:1px solid #ccc;font-size:1em;box-sizing:border-box;font-family:'Poppins',sans-serif;">
+                        <option value="">Selecciona una opción</option>
+                        <option value="familiar">Soy familiar de alguien que necesita ayuda</option>
+                        <option value="amigo">Soy amigo/a de alguien que necesita ayuda</option>
+                        <option value="personal">Solicito ayuda para mí mismo/a</option>
+                        <option value="profesional">Soy profesional de salud buscando orientación</option>
+                    </select>
+
+                    <input id="inp-nombre" type="text" placeholder="Tu nombre (puede ser anónimo)"
+                        style="width:100%;padding:10px;margin:0 0 10px;border-radius:5px;border:1px solid #ccc;font-size:1em;box-sizing:border-box;font-family:'Poppins',sans-serif;">
+
+                    <input id="inp-contacto" type="text" placeholder="WhatsApp o correo para responderte (opcional)"
+                        style="width:100%;padding:10px;margin:0 0 10px;border-radius:5px;border:1px solid #ccc;font-size:1em;box-sizing:border-box;font-family:'Poppins',sans-serif;">
+
+                    <select id="sel-medio" style="width:100%;padding:10px;margin:0 0 10px;border-radius:5px;border:1px solid #ccc;font-size:1em;box-sizing:border-box;font-family:'Poppins',sans-serif;">
+                        <option value="">¿Cómo prefieres que te contactemos?</option>
+                        <option>WhatsApp</option>
+                        <option>Correo electrónico</option>
+                        <option>Videollamada</option>
+                    </select>
+
+                    <textarea id="inp-mensaje" rows="4"
+                        placeholder="Cuéntanos brevemente la situación o qué necesitas (eres familiar, amigo/a o estás en crisis)..."
+                        style="width:100%;padding:10px;margin:0 0 10px;border-radius:5px;border:1px solid #ccc;font-size:1em;box-sizing:border-box;font-family:'Poppins',sans-serif;"></textarea>
+
+                    <button id="btn-enviar-formulario" class="btn btn-primary"
+                        onclick="enviarFormulario()"
+                        style="width:100%;padding:15px;font-size:1.1em;">
+                        Enviar Solicitud
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat flotante -->
+            <div id="chat-box" style="display:none;position:fixed;bottom:20px;right:20px;width:330px;background:white;border-radius:15px;box-shadow:0 8px 30px rgba(0,0,0,0.2);z-index:9999;overflow:hidden;">
+                <div style="background:#003366;color:white;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
+                    <span><strong>💬 Chat — PsicoApoyo</strong></span>
+                    <span onclick="cerrarChat()" style="cursor:pointer;font-size:1.3em;line-height:1;">&#10005;</span>
+                </div>
+                <div id="mensajes" style="padding:15px;height:260px;overflow-y:auto;background:#f9f9f9;">
+                    <div style="background:#003366;color:white;padding:10px 14px;border-radius:12px;margin-bottom:10px;font-size:0.88em;">
+                        Hola 👋 Bienvenido/a a PsicoApoyo. Puedes escribirme si buscas ayuda para ti o para un familiar. ¿Cómo puedo orientarte?
+                    </div>
+                </div>
+                <!-- Input de nombre — se muestra primero -->
+                <div id="chat-nombre-area" style="padding:10px;display:none;gap:8px;background:white;border-top:1px solid #eee;">
+                    <input id="inp-nombre-chat" type="text" placeholder="Tu nombre (puede ser anónimo)..."
+                        style="flex:1;padding:8px 12px;border-radius:20px;border:1px solid #ccc;font-size:0.9em;font-family:'Poppins',sans-serif;"
+                        onkeypress="if(event.key==='Enter') confirmarNombreChat()">
+                    <button onclick="confirmarNombreChat()"
+                        style="background:#003366;color:white;border:none;border-radius:20px;padding:8px 14px;cursor:pointer;font-size:.85em;font-family:'Poppins',sans-serif;">Entrar</button>
+                </div>
+                <!-- Input normal de mensajes -->
+                <div id="chat-input-area" style="padding:10px;display:flex;gap:8px;background:white;border-top:1px solid #eee;">
+                    <input id="msg-input" type="text" placeholder="Escribe aquí..."
+                        style="flex:1;padding:8px 12px;border-radius:20px;border:1px solid #ccc;font-size:0.9em;font-family:'Poppins',sans-serif;"
+                        onkeypress="if(event.key==='Enter') enviarMensaje()">
+                    <button onclick="enviarMensaje()"
+                        style="background:#003366;color:white;border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1.1em;flex-shrink:0;">&#10148;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Por qué no esperar — datos reales -->
+    <section style="background:#003366;color:white;padding:50px 20px;text-align:center;">
+        <div class="container">
+            <h2 style="color:white;margin-bottom:8px;">¿Por qué no esperar a pedir ayuda?</h2>
+            <p style="opacity:0.75;font-size:0.88em;margin-bottom:28px;">
+                Datos oficiales: INEGI — Estadísticas de Defunciones Registradas 2024 &amp; OMS 2024
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:25px;">
+                <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:16px 22px;min-width:160px;">
+                    <div style="font-size:1.9em;font-weight:700;color:#f1c40f;">8,856</div>
+                    <p style="margin:5px 0 0;font-size:0.84em;">suicidios en México<br>en 2024 (INEGI)</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:16px 22px;min-width:160px;">
+                    <div style="font-size:1.9em;font-weight:700;color:#f1c40f;">703,000</div>
+                    <p style="margin:5px 0 0;font-size:0.84em;">muertes anuales<br>en el mundo (OMS)</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:16px 22px;min-width:160px;">
+                    <div style="font-size:1.9em;font-weight:700;color:#f1c40f;">x20</div>
+                    <p style="margin:5px 0 0;font-size:0.84em;">intentos por cada<br>muerte consumada (OMS)</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:16px 22px;min-width:160px;">
+                    <div style="font-size:1.9em;font-weight:700;color:#f1c40f;">16.2</div>
+                    <p style="margin:5px 0 0;font-size:0.84em;">tasa Yucatán por<br>100,000 hab. (INEGI 2024)</p>
+                </div>
+            </div>
+            <p style="font-size:0.88em;opacity:0.8;max-width:650px;margin:0 auto;">
+                Pedir ayuda a tiempo salva vidas. <strong>El suicidio es prevenible</strong> cuando se detectan señales y se actúa de inmediato.
+                — OMS, <em>Vivir la vida: Guía de aplicación para la prevención del suicidio en los países</em>, 2021.
+            </p>
+        </div>
+    </section>
+
+    <footer style="background-color:#001a3a;color:white;padding:20px 0;margin-top:0;">
+        <div class="container">
+            <p>&copy; 2025 PsicoApoyo – TacoCoders | ITESCAM. Todos los derechos reservados.</p>
+            <p style="font-size:0.82em;opacity:0.7;">Datos: INEGI — EDR 2024 (cifras preliminares) | OMS — Suicide Fact Sheet 2024 | CONASAMA 2024</p>
+            <p style="font-size:0.82em;opacity:0.7;">Este sitio no reemplaza la atención médica profesional. Si hay peligro inmediato, llama al 911.</p>
+            <div class="social-media">
+                <a href="#" target="_blank"><img src="assets/facebook-icon.png" alt="Facebook"></a>
+                <a href="#" target="_blank"><img src="assets/instagram-icon.png" alt="Instagram"></a>
+                <a href="https://wa.me/529999000000" target="_blank"><img src="assets/whatsapp-icon.png" alt="WhatsApp"></a>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="app.js"></script>
+</body>
+</html>
