@@ -4,7 +4,7 @@
 -- ============================================================
 
 -- Roles
-INSERT IGNORE INTO roles (id_rol, nombre) VALUES (1, 'admin'), (2, 'psicologo');
+-- Roles ya sembrados en database.sql — línea eliminada para evitar error de columna
 
 -- Admin con contraseña cifrada (bcrypt de: admin2025)
 INSERT INTO usuarios (id_usuario, username, password_hash, id_rol)
