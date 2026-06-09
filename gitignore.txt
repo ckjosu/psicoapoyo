@@ -1,0 +1,20 @@
+# Entorno — NUNCA versionar
+.env
+
+# Docker
+.dockerignore
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentos generados (no necesarios en el repo)
+*.docx
+*.pdf

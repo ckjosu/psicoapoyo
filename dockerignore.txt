@@ -1,0 +1,21 @@
+# Secretos
+.env
+.env.*
+!.env.example
+
+# Documentación
+*.docx
+*.pdf
+README.md
+
+# Assets pesados
+assets/*.jpg
+
+# Control de versiones
+.git
+.gitignore
+.dockerignore
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
